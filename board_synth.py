@@ -28,16 +28,15 @@ class BoardSynth:
             if board[e][r]:
                 return False
             # because we are only checking directly below,
-            # there is the constraint that we need to keep the order of the cards played
-            if i == 0:
+            # there is the constraint that
+            # we need to keep the order of the cards played
+
+            # if second piece is above first
+            # then we only need to check the first piece
+            if i == 0 or r == dest[0][1]:
                 if r is not 0:
                     if not board[e][r-1]:
                         return False
-            else:
-                if not r > dest[0][1]:
-                    if r is not 0:
-                        if not board[e][r-1]:
-                            return False
         return True
 
     def to_n(self, char):
