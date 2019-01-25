@@ -1,17 +1,21 @@
 from colorama import Fore, Back, Style
+from copy import deepcopy
 # coordinates are board[column][row]
 # bottom left block is (A,0)
 
 class BoardSynth:
     def apply(self, board, *cards):
+        board_original = deepcopy(board)
         for c in cards:
             ds = self.dest(c)
-            print(ds)
             if ds and self.legal(board, ds):
                 for s in ds:
                     board[s[0]][s[1]] = s[2]
             else:
                 print("Illegal move: "+c)
+                board = board_original
+                return False
+        return True
 
     def legal(self, board, dest):
         for i, d in enumerate(dest):
@@ -33,7 +37,7 @@ class BoardSynth:
                     if r is not 0:
                         if not board[e][r-1]:
                             return False
-            return True
+        return True
 
     def to_n(self, char):
         return ord(char.upper())-65
@@ -62,10 +66,10 @@ class BoardSynth:
     def render(self, board):
         t_board = zip(*board)
         for r, row in reversed(list(enumerate(t_board))):
-            print(Back.BLACK + Fore.WHITE + str(r+1) + (2-int(r/10))*' ' + 
+            print(Back.BLACK + Fore.WHITE + str(r+1) + (2-int(r/10))*' ' +
                   "".join([self.to_symbol(e) for e in row]))
-        print(Back.BLACK + Fore.WHITE + '   ABCDEFGH'+Style.RESET_ALL) 
-    
+        print(Back.BLACK + Fore.WHITE + '   ABCDEFGH'+Style.RESET_ALL)
+
     def to_symbol(self, string):
         if not string:
             return Back.BLACK + ' '
