@@ -5,6 +5,7 @@ from copy import deepcopy
 
 class BoardSynth:
     def apply(self, board, *cards):
+        # this could be something to take out if we don't need rollbacks
         board_original = deepcopy(board)
         for c in cards:
             ds = self.dest(c)
@@ -47,21 +48,21 @@ class BoardSynth:
         e = int(self.to_n(card[2]))
         r = int(card[3])-1
         if orientation == 1:
-            return ((e, r, 'RX'), (e+1, r, 'WO'))
+            return ((e, r, 'R▶'), (e+1, r, 'W◁'))
         if orientation == 2:
-            return ((e, r, 'WO'), (e, r+1, 'RX'))
+            return ((e, r, 'W△'), (e, r+1, 'R▼'))
         if orientation == 3:
-            return ((e, r, 'WO'), (e+1, r, 'RX'))
+            return ((e, r, 'W▷'), (e+1, r, 'R◀'))
         if orientation == 4:
-            return ((e, r, 'RX'), (e, r+1, 'WO'))
+            return ((e, r, 'R▲'), (e, r+1, 'W▽'))
         if orientation == 5:
-            return ((e, r, 'RO'), (e+1, r, 'WX'))
+            return ((e, r, 'R▷'), (e+1, r, 'W◀'))
         if orientation == 6:
-            return ((e, r, 'WX'), (e, r+1, 'RO'))
+            return ((e, r, 'W▲'), (e, r+1, 'R▽'))
         if orientation == 7:
-            return ((e, r, 'WX'), (e+1, r, 'RO'))
+            return ((e, r, 'W▶'), (e+1, r, 'R◁'))
         if orientation == 8:
-            return ((e, r, 'RO'), (e, r+1, 'WX'))
+            return ((e, r, 'R△'), (e, r+1, 'W▼'))
 
     def render(self, board):
         t_board = zip(*board)
@@ -73,15 +74,14 @@ class BoardSynth:
     def to_symbol(self, string):
         if not string:
             return Back.BLACK + ' '
+
         bg = fg = None
         if string[0].upper() == 'W':
             bg = Back.RED
         else:
             bg = Back.WHITE
-        if string[1].upper() == 'O':
-            fg = Fore.BLACK + '●'
-        else:
-            fg = Fore.BLACK + '○'
+        fg = Fore.BLACK + string[1]
+
         return bg + fg
 
     def new(width = 8, height = 12):
