@@ -79,3 +79,7 @@ class BoardSynth:
         else:
             fg = Fore.BLACK + '○'
         return bg + fg
+
+    def new(width = 8, height = 12):
+        width, height = 8, 12
+        return [['' for _ in range(height)] for _ in range(width)]
