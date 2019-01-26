@@ -76,9 +76,9 @@ class BoardSynth:
 
         bg = fg = None
         if string[0].upper() == 'W':
-            bg = Back.RED
-        else:
             bg = Back.WHITE
+        else:
+            bg = Back.RED
         fg = Fore.BLACK + string[1]
 
         return bg + fg
