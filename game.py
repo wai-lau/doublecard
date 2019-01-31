@@ -1,7 +1,9 @@
 from board_synth import BoardSynth
+from board_analyzer import BoardAnalyzer
 import os
 
 bs = BoardSynth()
+baz = BoardAnalyzer()
 
 p1 = {}
 p2 = {}
@@ -33,6 +35,7 @@ def get_move(player):
 while not game_over:
     os.system('clear')
     bs.render(board)
+    baz.analyze(board)
     while True:
         if bs.apply(board, get_move(players[active])):
             break

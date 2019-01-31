@@ -2,7 +2,6 @@ from functools import reduce
 
 class BoardAnalyzer:
     def analyze(self, board):
-        # should cut excess col lengths
         col_points = list(zip(*[self.check_line(col) for col in board if "".join(col)]))
         if len(col_points) <= 0:
             print("No moves played.")

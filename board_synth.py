@@ -65,10 +65,18 @@ class BoardSynth:
 
     def render(self, board):
         t_board = zip(*board)
+        self.print_instructions()
+
         for r, row in reversed(list(enumerate(t_board))):
             print(Back.BLACK + Fore.WHITE + str(r+1) + (2-int(r/10))*' ' +
                   "".join([self.to_symbol(e) for e in row]))
         print(Back.BLACK + Fore.WHITE + '   ABCDEFGH'+Style.RESET_ALL)
+
+    def print_instructions(self):
+        print("\n 1  2 3  4 5  6 7  8")
+        print(" " +              "".join(map(lambda x: self.to_symbol(x), [""  ,""  ,""  ,'R▼',""  ,""  ,""  ,""  ,'W▽',""  ,""  ,""  ,"" ,'R▽',""  ,""  ,""  ,""  ,'W▼'])))
+        print(Back.BLACK + " " + "".join(map(lambda x: self.to_symbol(x), ['R▶','W◁',""  ,'W△',""  ,'W▷','R◀',""  ,'R▲',""  ,'R▷','W◀',"" ,'W▲',""  ,'W▶','R◁',""  ,'R△'])))
+        print()
 
     def to_symbol(self, string):
         if not string:
