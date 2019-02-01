@@ -1,5 +1,6 @@
 from board_synth import BoardSynth
 from board_analyzer import BoardAnalyzer
+from clock_it import clock_it
 import os
 
 bs = BoardSynth()
@@ -35,7 +36,8 @@ def get_move(player):
 while not game_over:
     os.system('clear')
     bs.render(board)
-    baz.analyze(board)
+    clock_it(baz.analyze)(board)
+
     while True:
         if bs.apply(board, get_move(players[active])):
             break
