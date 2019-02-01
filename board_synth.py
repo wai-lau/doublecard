@@ -73,9 +73,9 @@ class BoardSynth:
         print(Back.BLACK + Fore.WHITE + '   ABCDEFGH'+Style.RESET_ALL)
 
     def print_instructions(self):
-        print("\n 1  2 3  4 5  6 7  8")
-        print(" " +              "".join(map(lambda x: self.to_symbol(x), [""  ,""  ,""  ,'R▼',""  ,""  ,""  ,""  ,'W▽',""  ,""  ,""  ,"" ,'R▽',""  ,""  ,""  ,""  ,'W▼'])))
+        print("\n " +            "".join(map(lambda x: self.to_symbol(x), [""  ,""  ,""  ,'R▼',""  ,""  ,""  ,""  ,'W▽',""  ,""  ,""  ,"" ,'R▽',""  ,""  ,""  ,""  ,'W▼'])))
         print(Back.BLACK + " " + "".join(map(lambda x: self.to_symbol(x), ['R▶','W◁',""  ,'W△',""  ,'W▷','R◀',""  ,'R▲',""  ,'R▷','W◀',"" ,'W▲',""  ,'W▶','R◁',""  ,'R△'])))
+        print(Style.RESET_ALL + "\n 1  2 3  4 5  6 7  8")
         print()
 
     def to_symbol(self, string):

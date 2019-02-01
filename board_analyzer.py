@@ -17,16 +17,16 @@ class BoardAnalyzer:
         color_col_points = list(zip(*col_points[1]))
         color_row_points = list(zip(*row_points[1]))
 
-        for i in range(1,5):
+        for i in range(2,5):
             print("{}: {} potential 4 in a {} group with {} filled."
                     .format("DOT", reduce(add, dot_col_points[i]), "column", i))
-        for i in range(1,5):
+        for i in range(2,5):
             print("{}: {} potential 4 in a {} group with {} filled."
                     .format("DOT", reduce(add, dot_row_points[i]), "row", i))
-        for i in range(1,5):
+        for i in range(2,5):
             print("{}: {} potential 4 in a {} group with {} filled."
                     .format("COLOR", reduce(add, color_col_points[i]), "column", i))
-        for i in range(1,5):
+        for i in range(2,5):
             print("{}: {} potential 4 in a {} group with {} filled."
                     .format("COLOR", reduce(add, color_row_points[i]), "row", i))
 
@@ -48,7 +48,7 @@ class BoardAnalyzer:
             # once you find a four in a row
             dot_group = [l[1] for l in line[s:s+4] if l]
 
-            if len(dot_group) == 0:
+            if not "".join(dot_group):
                 # this means this group is empty
                 continue
             color_group = [l[0] for l in line[s:s+4] if l]
