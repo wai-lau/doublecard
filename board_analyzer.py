@@ -5,12 +5,21 @@ class BoardAnalyzer:
     def __init__(self, ach=None):
         self.ach = ach
 
+    def check_victory(self, board):
+        dots, colors = self.analyze(board)
+        self.print_analysis((dots, colors))
+        if dots[4] and colors[4]:
+            return "active"
+        elif dots[4]:
+            return "dots"
+        elif colors[4]:
+            return "colors"
+
     def analyze(self, board):
         t_board = list(zip(*board))
 
         if not "".join(t_board[0]):
-            print("No moves played")
-            return
+            return (0,0,0,0,0), (0,0,0,0,0)
 
         cols = [col for col in board if "".join(col)]
         rows = [row for row in t_board if "".join(row)]
@@ -20,27 +29,25 @@ class BoardAnalyzer:
 
         lines = cols + rows + dags
 
-        if self.ach:
-            checker = self.fetch_line
-        else:
-            checker = self.check_line
-
-        points = list(zip(*map(checker, lines)))
+        points = list(zip(*map(self.analyzer(), lines)))
         dot_points = list(map(sum, list(zip(*points[0]))))
         color_points = list(map(sum, list(zip(*points[1]))))
 
+        return dot_points, color_points
+
+    def print_analysis(self, analysis):
+        dot_points = analysis[0]
+        color_points = analysis[1]
         for i in range(1,5):
             print("D: {} potential 4-in-a-row group with {} filled."
                   .format(dot_points[i], i))
             print("C: {} potential 4-in-a-row group with {} filled."
                   .format(color_points[i], i))
 
-        if dot_points[4] and color_points[4]:
-            return "active"
-        elif dot_points[4]:
-            return "dots"
-        elif color_points[4]:
-            return "colors"
+    def analyzer(self):
+        if self.ach:
+            return self.fetch_line
+        return self.check_line
 
     def fetch_line(self, line):
         line = self.convert_line(line)
@@ -52,10 +59,6 @@ class BoardAnalyzer:
         # |XX
         # |XX
         # |--
-        # |
-        # |
-        # |
-        # |
         # |
         # once you reach the square, you must start reducing the diagonal length
 

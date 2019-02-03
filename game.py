@@ -39,12 +39,13 @@ def get_move(player):
 while not winner:
     os.system('clear')
     bs.render(board)
-    winner = clock(baz.analyze, 100)(board)
+    winner = clock(baza.check_victory)(board)
 
-    clock(baza.analyze, 100)(board)
-    clock(baza.analyze, 100)(board)
-    clock(baz.analyze, 100)(board)
-    clock(baz.analyze, 100)(board)
+    clock(baza.analyze)(board)
+    clock(baza.analyze)(board)
+    clock(baz.analyze)(board)
+    clock(baz.analyze)(board)
+
     if winner:
         if winner == "active":
             winner = players[active]['token']
