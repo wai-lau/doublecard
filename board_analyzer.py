@@ -1,64 +1,37 @@
 from functools import reduce
+# Convention: Dots is position 0, Colors position 1
 
 class BoardAnalyzer:
     def analyze(self, board):
-        col_points = list(zip(*[self.check_line(col) for col in board if "".join(col)]))
-        if len(col_points) <= 0:
-            print("No moves played.")
-            return
         t_board = list(zip(*board))
-        row_points = list(zip(*[self.check_line(r) for r in t_board if "".join(r)]))
 
-        add = lambda x, y: x+y
+        if not "".join(t_board[0]):
+            print("No moves played")
+            return
 
-        diag_points = list(zip(*[self.check_line(d) for d in self.diagonals(board)+self.diagonals(self.flip_board(board)) if "".join(d)]))
+        cols = [col for col in board if "".join(col)]
+        rows = [row for row in t_board if "".join(row)]
+        dags = [dag for dag in self.diagonals(board)
+                + self.diagonals(self.flip_board(board))
+                if "".join(dag)]
 
-        # up until the return, this is only used for displaying stuff
-        dot_col_points = list(zip(*col_points[0]))
-        color_col_points = list(zip(*col_points[1]))
-        dot_row_points = list(zip(*row_points[0]))
-        color_row_points = list(zip(*row_points[1]))
-        dot_diag_points = list(zip(*diag_points[0]))
-        color_diag_points = list(zip(*diag_points[1]))
+        lines = cols + rows + dags
 
-        for i in range(2,5):
-            print("{}: {} potential 4 in a {} group with {} filled."
-                    .format("D", reduce(add, dot_col_points[i]), "column", i))
-        for i in range(2,5):
-            print("{}: {} potential 4 in a {} group with {} filled."
-                    .format("D", reduce(add, dot_row_points[i]), "row", i))
-        for i in range(2,5):
-            print("{}: {} potential 4 in a {} group with {} filled."
-                    .format("D", reduce(add, dot_diag_points[i]), "diagonal", i))
+        points = list(zip(*map(self.check_line, lines)))
+        dot_points = list(map(sum, list(zip(*points[0]))))
+        color_points = list(map(sum, list(zip(*points[1]))))
 
-        print()
+        for i in range(1,5):
+            print("D: {} potential 4-in-a-row group with {} filled."
+                  .format(dot_points[i], i))
+            print("C: {} potential 4-in-a-row group with {} filled."
+                  .format(color_points[i], i))
 
-        for i in range(2,5):
-            print("{}: {} potential 4 in a {} group with {} filled."
-                    .format("C", reduce(add, color_col_points[i]), "column", i))
-        for i in range(2,5):
-            print("{}: {} potential 4 in a {} group with {} filled."
-                    .format("C", reduce(add, color_row_points[i]), "row", i))
-        for i in range(2,5):
-            print("{}: {} potential 4 in a {} group with {} filled."
-                    .format("C", reduce(add, color_diag_points[i]), "diagonal", i))
-
-        if (reduce(add, dot_col_points[4]) or
-            reduce(add, dot_row_points[4]) or
-            reduce(add, dot_diag_points[4])) and\
-            (reduce(add, color_col_points[4]) or
-            reduce(add, color_row_points[4]) or
-            reduce(add, color_diag_points[4])):
+        if dot_points[4] and color_points[4]:
             return "active"
-
-        if (reduce(add, dot_col_points[4]) or
-            reduce(add, dot_row_points[4]) or
-            reduce(add, dot_diag_points[4])):
+        elif dot_points[4]:
             return "dots"
-
-        if (reduce(add, color_col_points[4]) or
-            reduce(add, color_row_points[4]) or
-            reduce(add, color_diag_points[4])):
+        elif color_points[4]:
             return "colors"
 
     def check_line(self, line):
@@ -105,7 +78,7 @@ class BoardAnalyzer:
         # |
         # once you reach the square, you must start reducing the diagonal length
 
-        diags = []
+        dags = []
         cols = len(board)
         rows = len(board[0])
         length = cols
@@ -115,17 +88,17 @@ class BoardAnalyzer:
             d = []
             for i in range(length):
                 d.append(board[0+i][r+i])
-            diags.append(d)
+            dags.append(d)
 
         length = cols-1
         for c in range(1, cols - diag + 1):
             d = []
             for i in range(length):
                 d.append(board[c+i][0+i])
-            diags.append(d)
+            dags.append(d)
             length = length-1
 
-        return(diags)
+        return(dags)
 
     def flip_board(self, board):
         return [c for c in reversed(board)]
