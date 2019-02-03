@@ -21,7 +21,7 @@ players = [p1, p2]
 
 # first player (1 or 0)
 active = 0
-game_over = False
+winner = False
 
 board = bs.new()
 
@@ -33,13 +33,18 @@ def get_move(player):
         print("Ｅｌｅｃｔｒｏｎｉｃ　Ｓｏｕｌ　ｎｏｔ　Ｉｍｐｌｅｍｅｎｔｅｄ")
         exit()
 
-while not game_over:
+while not winner:
     os.system('clear')
     bs.render(board)
-    clock(baz.analyze)(board)
+    winner = clock(baz.analyze)(board)
+    if winner:
+        if winner == "active":
+            winner = players[active]['token']
+        break
 
     while True:
         if bs.apply(board, get_move(players[active])):
             break
     active = (active+1)%2
 
+print("Game over,", winner, "win!")
