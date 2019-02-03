@@ -1,5 +1,6 @@
 from board_synth import BoardSynth
 from board_analyzer import BoardAnalyzer
+from analysis_cache import AnalysisCache
 import os
 
 bs = BoardSynth()

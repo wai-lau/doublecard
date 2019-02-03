@@ -1,10 +1,10 @@
 from board_synth import BoardSynth
 from board_analyzer import BoardAnalyzer
 from clock_it import clock
+from analysis_cache import AnalysisCache
 import os
 
 bs = BoardSynth()
-baz = BoardAnalyzer()
 
 p1 = {}
 p2 = {}
@@ -24,6 +24,9 @@ active = 0
 winner = False
 
 board = bs.new()
+ach = AnalysisCache()
+baza = BoardAnalyzer(ach)
+baz = BoardAnalyzer()
 
 def get_move(player):
     if player["soul"] == "organic":
@@ -36,7 +39,12 @@ def get_move(player):
 while not winner:
     os.system('clear')
     bs.render(board)
-    winner = clock(baz.analyze)(board)
+    winner = clock(baz.analyze, 100)(board)
+
+    clock(baza.analyze, 100)(board)
+    clock(baza.analyze, 100)(board)
+    clock(baz.analyze, 100)(board)
+    clock(baz.analyze, 100)(board)
     if winner:
         if winner == "active":
             winner = players[active]['token']
