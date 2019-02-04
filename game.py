@@ -28,6 +28,7 @@ board = bs.new()
 ach = AnalysisCache()
 baza = BoardAnalyzer(ach)
 mf = MoveFinder()
+all_moves = []
 
 def get_move(player):
     move = ""
@@ -37,16 +38,22 @@ def get_move(player):
         print("{}, {}'s move: \r".format(player["token"], player["name"]), end='')
         possible_moves = mf.find_moves(board)
         best_move = ''
-        heuristic = -1
+        heuristic = -1 if player["token"] == "dots" else 1
         for m in possible_moves:
             b = bs.copy(board)
             bs.apply(b, m)
             h = baza.heuristic(b)
-            if heuristic < h:
-                best_move = m
-                heuristic = h
+            if player["token"] == "dots":
+                if heuristic < h:
+                    best_move = m
+                    heuristic = h
+            else:
+                if heuristic > h:
+                    best_move = m
+                    heuristic = h
         print("{}, {}'s move: {}".format(player["token"], player["name"], best_move))
         move = best_move
+    all_moves.append(move)
     return move
 
 os.system('clear')
@@ -70,3 +77,4 @@ while not winner:
     active = (active+1)%2
 
 print("Game over,", winner, "win!")
+print("Moves played:", all_moves)

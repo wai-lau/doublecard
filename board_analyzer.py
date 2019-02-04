@@ -6,8 +6,7 @@ class BoardAnalyzer:
         self.ach = ach
 
     def check_victory(self, board):
-        dots, colors = self.analyze(board)
-        # self.print_analysis((dots, colors))
+        dots, colors = self.analyze(board, verbose=True)
         if dots[4] and colors[4]:
             return "active"
         elif dots[4]:
@@ -15,7 +14,7 @@ class BoardAnalyzer:
         elif colors[4]:
             return "colors"
 
-    def analyze(self, board):
+    def analyze(self, board, verbose=False):
         t_board = list(zip(*board))
 
         if not "".join(t_board[0]):
@@ -33,17 +32,23 @@ class BoardAnalyzer:
         dot_points = list(map(sum, list(zip(*points[0]))))
         color_points = list(map(sum, list(zip(*points[1]))))
 
+        if verbose:
+            self.print_analysis((dot_points, color_points))
+
         return dot_points, color_points
 
-    def heuristic(self, board):
-        d, c = self.analyze(board)
+    def heuristic(self, board, verbose=False):
+        d, c = self.analyze(board, verbose)
         # dots are positive, colors are negative
-        return self.potential(d) - self.potential(c)
+        pot = self.potential(d) - self.potential(c)
+        if verbose:
+            print(pot)
+        return pot
 
-    def potential(self, points, power=3):
+    def potential(self, points):
         pot = 0
         for i, n in enumerate(points[2:]):
-            pot = pot + (i+2)**power * n
+            pot = pot + {0:2, 1:7, 2:10000}[i]*n
         return pot
 
     def print_analysis(self, analysis):
@@ -114,37 +119,5 @@ class BoardAnalyzer:
                 color = color + "1"
             else:
                 color = color + "2"
-        return (dot, color)
-
-    def check_line(self, line):
-        # the number of groups of 4 in a line will be the length-3
-        groups = len(line)-3
-
-        # dot[2] will give you the number of unblocked doubles
-        # dot[3] triples etc...
-        dot = [0,0,0,0,0]
-        color = [0,0,0,0,0]
-
-        if groups <= 0:
-            return (dot, color)
-
-        for s in range(groups):
-            # a possible optimization here could be to stop searching
-            # once you find a four in a row
-            dot_group = [l[1] for l in line[s:s+4] if l]
-
-            if not "".join(dot_group):
-                # this means this group is empty
-                continue
-            color_group = [l[0] for l in line[s:s+4] if l]
-
-            if (not any(sym in dot_group for sym in ['▶','▲','▼','◀']))\
-            or (not any(sym in dot_group for sym in ['▷','△','▽','◁'])):
-                dot[len(dot_group)] = dot[len(dot_group)]+1
-
-            if (not 'R' in color_group)\
-            or (not 'W' in color_group):
-                color[len(color_group)] = color[len(color_group)]+1
-
         return (dot, color)
 
