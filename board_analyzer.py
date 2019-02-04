@@ -7,7 +7,7 @@ class BoardAnalyzer:
 
     def check_victory(self, board):
         dots, colors = self.analyze(board)
-        self.print_analysis((dots, colors))
+        # self.print_analysis((dots, colors))
         if dots[4] and colors[4]:
             return "active"
         elif dots[4]:
@@ -34,6 +34,17 @@ class BoardAnalyzer:
         color_points = list(map(sum, list(zip(*points[1]))))
 
         return dot_points, color_points
+
+    def heuristic(self, board):
+        d, c = self.analyze(board)
+        # dots are positive, colors are negative
+        return self.potential(d) - self.potential(c)
+
+    def potential(self, points, power=3):
+        pot = 0
+        for i, n in enumerate(points[2:]):
+            pot = pot + (i+2)**power * n
+        return pot
 
     def print_analysis(self, analysis):
         dot_points = analysis[0]

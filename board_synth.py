@@ -4,9 +4,12 @@ from copy import deepcopy
 # bottom left block is (A,0)
 
 class BoardSynth:
+    def copy(self, board):
+        return deepcopy(board)
+
     def apply(self, board, *cards):
         # this could be something to take out if we don't need rollbacks
-        board_original = deepcopy(board)
+        board_original = self.copy(board)
         for c in cards:
             ds = self.dest(c)
             if ds and self.legal(board, ds):
@@ -45,7 +48,13 @@ class BoardSynth:
     def dest(self, card):
         orientation = int(card[1])
         e = int(self.to_n(card[2]))
-        r = int(card[3])-1
+        r = 0
+
+        if len(card) == 4:
+            r = int(card[3])-1
+        if len(card) == 5:
+            r = int(card[3] + card[4])-1
+
         if orientation == 1:
             return ((e, r, 'R▶'), (e+1, r, 'W◁'))
         if orientation == 2:
