@@ -5,17 +5,8 @@ from electronic_soul import ElectronicSoul
 from clock_it import clock
 import os
 
-
 p1 = {}
 p2 = {}
-
-p1["name"] = "PLAYER ONE"
-p1["token"] = "colors"
-p1["soul"] = "organic"
-
-p2["name"] = "ELECTRONIC SOUL"
-p2["token"] = "dots"
-p2["soul"] = "electronic"
 
 players = [p1, p2]
 
@@ -27,16 +18,28 @@ bs = BoardSynth()
 board = bs.new()
 ach = AnalysisCache()
 baz = BoardAnalyzer(ach)
-esoul = ElectronicSoul(bs, baz, "dots")
+naive_sl = ElectronicSoul(bs, baz, "naive_single_layer", "dots")
+monkey = ElectronicSoul(bs, baz, "chaos_monkey", "colors")
 all_moves = []
+
+p1["name"] = "PLAYER ONE"
+p1["token"] = "colors"
+p1["soul"] = "organic"
+
+p2["name"] = "-naive-"
+p2["token"] = "dots"
+p2["soul"] = naive_sl
 
 def get_move(player):
     move = ""
     if player["soul"] == "organic":
-        move = input("{}, {}'s move: ".format(player["token"], player["name"]))
+        move = input("{}, {}'s move: "
+                     .format(player["token"], player["name"]))
     else:
-        move = esoul.get_move(board)
-        print("{}, {}'s move: {}".format(player["token"], player["name"], move))
+        move = clock(player["soul"].get_move)(board)
+        print("{}, {}'s move: {}"
+              .format(player["token"], player["name"], move))
+        input("Press enter.")
     all_moves.append(move)
     return move
 
@@ -44,13 +47,8 @@ os.system('clear')
 bs.render(board)
 while not winner:
     while True:
-        if players[active]["soul"] != "organic":
-            if bs.apply(board, clock(get_move)(players[active])):
-                input("\nPress <Enter>")
-                break
-        else:
-            if bs.apply(board, get_move(players[active])):
-                break
+        if bs.apply(board, get_move(players[active])):
+            break
     os.system('clear')
     bs.render(board)
     winner = baz.check_victory(board)

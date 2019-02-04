@@ -27,7 +27,9 @@ def clock(func, times=1):
            result = func(args)
        dt2 = datetime.now().microsecond
        print("-{}- took {}μs with args type {}"
-             .format(func.__name__, int(dt2)-int(dt), type(args)))
+             .format(func.__name__,
+                     int(dt2)-int(dt),
+                     type(args)))
        return result
    return func_wrapper
 
