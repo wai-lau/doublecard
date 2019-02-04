@@ -11,13 +11,19 @@ class BoardSynth:
         # this could be something to take out if we don't need rollbacks
         board_original = self.copy(board)
         for c in cards:
-            ds = self.dest(c)
-            if ds and self.legal(board, ds):
-                for s in ds:
-                    board[s[0]][s[1]] = s[2]
-            else:
-                print("Illegal move: "+c)
+            try:
+                ds = self.dest(c)
+                if ds and self.legal(board, ds):
+                    for s in ds:
+                        board[s[0]][s[1]] = s[2]
+                else:
+                    print("Illegal move: "+c)
+                    board = board_original
+                    return False
+            except Exception as e:
                 board = board_original
+                print("Illegal move: "+c)
+                print(e)
                 return False
         return True
 

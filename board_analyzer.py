@@ -28,7 +28,7 @@ class BoardAnalyzer:
 
         lines = cols + rows + dags
 
-        points = list(zip(*map(self.analyzer(), lines)))
+        points = list(zip(*map(self.fetch_line, lines)))
         dot_points = list(map(sum, list(zip(*points[0]))))
         color_points = list(map(sum, list(zip(*points[1]))))
 
@@ -59,11 +59,6 @@ class BoardAnalyzer:
                   .format(dot_points[i], i))
             print("C: {} potential 4-in-a-row group with {} filled."
                   .format(color_points[i], i))
-
-    def analyzer(self):
-        if self.ach:
-            return self.fetch_line
-        return self.check_line
 
     def fetch_line(self, line):
         line = self.convert_line(line)
