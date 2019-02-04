@@ -6,7 +6,7 @@ class BoardAnalyzer:
         self.ach = ach
 
     def check_victory(self, board):
-        dots, colors = self.analyze(board, verbose=True)
+        dots, colors = self.analyze(board, verbose=False)
         if dots[4] and colors[4]:
             return "active"
         elif dots[4]:

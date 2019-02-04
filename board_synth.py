@@ -77,7 +77,7 @@ class BoardSynth:
         self.print_instructions()
 
         for r, row in reversed(list(enumerate(t_board))):
-            print(Back.BLACK + Fore.WHITE + str(r+1) + (2-int(r/10))*' ' +
+            print(Back.BLACK + Fore.WHITE + str(r+1) + (2-int((r+1)/10))*' ' +
                   "".join([self.to_symbol(e) for e in row]))
         print(Back.BLACK + Fore.WHITE + '   ABCDEFGH'+Style.RESET_ALL)
 
@@ -89,8 +89,7 @@ class BoardSynth:
 
     def to_symbol(self, string):
         if not string:
-            return Back.BLACK + ' '
-
+            return Back.BLACK + Fore.WHITE + '·'
         coloured = ""
         if string[0].upper() == 'R' and string[1] in ['▷','△','▽','◁']:
             coloured = self.fill_in(string[1])
