@@ -91,14 +91,27 @@ class BoardSynth:
         if not string:
             return Back.BLACK + ' '
 
+        coloured = ""
+        if string[0].upper() == 'R' and string[1] in ['▷','△','▽','◁']:
+            coloured = self.fill_in(string[1])
+
         bg = fg = None
+
         if string[0].upper() == 'W':
             bg = Back.WHITE
         else:
             bg = Back.RED
-        fg = Fore.BLACK + string[1]
+
+        # This feels mildly racist
+        if not coloured:
+            fg = Fore.BLACK + string[1]
+        else:
+            fg = Fore.WHITE + coloured
 
         return bg + fg
+
+    def fill_in(self, sym):
+        return {'▷':'▶','△':'▲','▽':'▼','◁':'◀'}[sym]
 
     def new(width = 8, height = 12):
         width, height = 8, 12
