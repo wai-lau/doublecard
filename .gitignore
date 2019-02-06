@@ -1,3 +1,7 @@
 *.pyc
 *.swp
 *.pkl
+/dist
+/build
+game.spec
+
