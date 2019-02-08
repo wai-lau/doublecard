@@ -6,7 +6,10 @@ class BoardAnalyzer:
         self.ach = ach
 
     def check_victory(self, board):
-        dots, colors = self.analyze(board, verbose=False)
+        # doesn't matter which side the analysis is done on for victory
+        # but it's probably good to throw an error when people don't
+        # specify a side, sooooo
+        dots, colors = self.analyze(board, "dots", verbose=False)
         if dots[4] and colors[4]:
             return "active"
         elif dots[4]:
@@ -14,7 +17,7 @@ class BoardAnalyzer:
         elif colors[4]:
             return "colors"
 
-    def analyze(self, board, verbose=False):
+    def analyze(self, board, token, verbose=False):
         t_board = list(zip(*board))
 
         if not "".join(t_board[0]):
@@ -37,18 +40,30 @@ class BoardAnalyzer:
 
         return dot_points, color_points
 
-    def heuristic(self, board, verbose=False):
-        d, c = self.analyze(board, verbose)
-        # dots are positive, colors are negative
-        pot = self.potential(d) - self.potential(c)
+    def heuristic(self, board, token, verbose=False):
+        d, c = self.analyze(board, token, verbose)
+        pot = 0
+        if token == "dots":
+            pot = self.potential(d) - self.enemy_potential(c)
+        else:
+            pot = self.potential(c) - self.enemy_potential(d)
         if verbose:
             print(pot)
         return pot
 
     def potential(self, points):
         pot = 0
+        # since we take a subset, points[0] is the number of doubles
+        # using a multiple of 100 if it outclasses in all cases
         for i, n in enumerate(points[2:]):
-            pot = pot + {0:2, 1:7, 2:10000}[i]*n
+            pot = pot + {0:2, 1:7, 2:1000000000}[i]*n
+        return pot
+
+    def enemy_potential(self, points):
+        pot = 0
+        # enemy triples are worth as much as a loss, since they will play that move 
+        for i, n in enumerate(points[2:]):
+            pot = pot + {0:7, 1:10000, 2:1000000}[i]*n
         return pot
 
     def print_analysis(self, analysis):

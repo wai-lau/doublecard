@@ -17,20 +17,16 @@ class ElectronicSoul:
 
     def naive_single_layer(self, board):
         possible_moves = self.mf.find_moves(board)
+        current = self.baz.heuristic(board, self.token)
         best_move = ''
-        heuristic = -1 if self.token == "dots" else 1
+        best_diff = -2000000000
         for m in possible_moves:
             b = self.bs.copy(board)
             self.bs.apply(b, m)
-            h = self.baz.heuristic(b)
-            if self.token == "dots":
-                if heuristic < h:
-                    best_move = m
-                    heuristic = h
-            else:
-                if heuristic > h:
-                    best_move = m
-                    heuristic = h
+            h = self.baz.heuristic(b, self.token)
+            if (h - current) > best_diff:
+                best_move = m
+                best_diff = h - current
 
         return best_move
 

@@ -40,15 +40,16 @@ def get_move(player):
         print("{}, {}'s move: {}"
               .format(player["token"], player["name"], move))
         input("Press enter.")
-    all_moves.append(move)
     return move
 
 os.system('clear')
 bs.render(board)
 while not winner:
     while True:
-        if bs.apply(board, get_move(players[active])):
+        move = get_move(players[active])
+        if bs.apply(board, move):
             break
+    all_moves.append(move)
     os.system('clear')
     bs.render(board)
     winner = baz.check_victory(board)
