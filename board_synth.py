@@ -30,9 +30,9 @@ class BoardSynth:
     def legal(self, board, dest):
         for i, d in enumerate(dest):
             e, r = d[0], d[1]
-            if r < 0 or len(board[0]) < r:
+            if r < 0 or len(board[0]) <= r:
                 return False
-            if e < 0 or len(board) < e:
+            if e < 0 or len(board) <= e:
                 return False
             if board[e][r]:
                 return False
@@ -58,7 +58,7 @@ class BoardSynth:
 
         if len(card) == 4:
             r = int(card[3])-1
-        if len(card) == 5:
+        elif len(card) == 5:
             r = int(card[3] + card[4])-1
 
         if orientation == 1:
