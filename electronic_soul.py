@@ -2,7 +2,7 @@ from random import shuffle, random
 from move_finder import MoveFinder
 
 class ElectronicSoul:
-    def __init__(self, bs, baz, method, token='dots'):
+    def __init__(self, bs, baz, method, token):
         self.mf = MoveFinder()
         self.bs = bs
         self.baz = baz
