@@ -4,6 +4,7 @@ from analysis_cache import AnalysisCache
 from electronic_soul import ElectronicSoul
 from clock_it import clock
 import os
+import re
 
 # number of identical cards and maximum moves allowed in the game
 CARDS = 24
@@ -22,21 +23,24 @@ players = [p1, p2]
 active = 0
 winner = False
 
-# for manual play, prompt the user to choose between dots or colors and assign the
-# other choice to the electronic soul
+
+# for manual play, prompt the user to choose between dots or colors
+# assign other choice to the electronic soul
 def get_choice(choices):
-  choice = ""
-  while choice not in choices:
-      choice = input("Which of [%s] would you like to play as? " % ", ".join(choices))
-  return choice
+    choice = ""
+    while choice not in choices:
+        choice = input(
+            "Which of [%s] would you like to play as? " % ", ".join(choices))
+    return choice
+
 
 choice = get_choice(["dots", "colors"])
 opp_choice = ""
 
 if choice == "dots":
-	opp_choice == "colors"
+    opp_choice == "colors"
 else:
-	opp_choice = "dots"
+    opp_choice = "dots"
 
 bs = BoardSynth()
 board = bs.new()
@@ -56,17 +60,21 @@ p2["name"] = "-naive-"
 p2["token"] = opp_choice
 p2["soul"] = naive_sl
 
+
 def get_move(player):
     move = ""
     if player["soul"] == "organic":
         move = input("{}, {}'s move: "
                      .format(player["token"], player["name"]))
+        # to allow users to enter input containing spaces or different caps
+        move = re.sub(r'\s+', '', move).lower()
     else:
         move = clock(player["soul"].get_move)(board)
         print("{}, {}'s move: {}"
               .format(player["token"], player["name"], move))
         input("Press enter.")
     return move
+
 
 os.system('clear')
 # The following will fill up the board, helping with the recycle implementation
@@ -86,7 +94,7 @@ while not winner:
         if winner == "active":
             winner = players[active]['token']
         break
-    active = (active+1)%2
+    active = (active+1) % 2
 
 print("Game over,", winner, "win!")
 print("Moves played:", all_moves)
