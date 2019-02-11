@@ -18,29 +18,24 @@ class BoardSynth:
                     for s in ds:
                         board[s[0]][s[1]] = s[2]
                 else:
-                    print("Illegal move: "+c)
+                    print("Illegal move: "+' '.join(c))
                     board = board_original
                     return False
             except Exception as e:
                 board = board_original
-                print("Illegal move: "+c)
+                print("Illegal move: "+' '.join(c))
                 print(e)
                 return False
         return True
 
     def convert_coord_to_card(self, board, cards):
-        card_coords = findall(r'([a-hA-H]{1}\d+)', cards)
-        card = []
-        for c in card_coords:
-            col = self.to_n(c[0])
-            row = int(c[1:]) - 1
-            sym = board[col][row]
-            card.append((col, row, sym))
-        return tuple(card)
+        col1, row1 = self.to_n(cards[0]), int(cards[1]) - 1
+        col2, row2 = self.to_n(cards[2]), int(cards[3]) - 1
+        sym1, sym2 = board[col1][row1], board[col2][row2]
+        return ((col1, row1, sym1),(col2, row2, sym2))
 
-    def apply_remove(self, board, cards):
+    def apply_remove(self, board, ds):
         board_original = self.copy(board)
-        ds = self.convert_coord_to_card(board, cards)
         try:
             if ds and self.legal_remove(board, ds):
                 for s in ds:
@@ -56,10 +51,16 @@ class BoardSynth:
         return True
 
     def recycle(self, board, to_remove, to_apply, last_move):
-        if to_remove.upper() == last_move.replace('0', '').upper():
-            print("Cannot recycle recently played move: " + to_remove)
+        remove_ds = self.convert_coord_to_card(board, to_remove)
+        last_ds = self.dest(last_move)
+        apply_ds = self.dest(to_apply)
+        if remove_ds == last_ds:
+            print("Cannot recycle recently played move: " + ' '.join(to_remove))
             return False
-        if self.apply_remove(board, to_remove):
+        if remove_ds == apply_ds:
+            print("Invalid--card cannot remain in the same place!: " + ' '.join(to_remove))
+            return False
+        if self.apply_remove(board, remove_ds):
             return self.apply(board, to_apply)
         return False
 
@@ -95,18 +96,18 @@ class BoardSynth:
         if card[0] == '0':
             orientation = int(card[1])
             e = int(self.to_n(card[2]))
-            r = 0
+            r = int(card[3])-1
         else:
             orientation = int(card[0])
             e = int(self.to_n(card[1]))
-            r = 0
-
-        if len(card) == 3:
             r = int(card[2])-1
-        if len(card) == 4:
-            r = int(card[3])-1
-        elif len(card) == 5:
-            r = int(card[3] + card[4])-1
+
+        # if len(card) == 3:
+        #     r = int(card[2])-1
+        # if len(card) == 4:
+        #     r = int(card[3])-1
+        # elif len(card) == 5:
+        #     r = int(card[3] + card[4])-1
 
         if orientation == 1:
             return ((e, r, 'R▶'), (e+1, r, 'W◁'))
