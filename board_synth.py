@@ -1,5 +1,6 @@
 from colorama import Fore, Back, Style
 from copy import deepcopy
+from re import findall
 # coordinates are board[column][row]
 # bottom left block is (A,0)
 
@@ -27,6 +28,45 @@ class BoardSynth:
                 return False
         return True
 
+    def convert_coord_to_card(self, board, cards):
+        card_coords = findall(r'([a-hA-H]{1}\d+)', cards)
+        card = []
+        for c in card_coords:
+            col = self.to_n(c[0])
+            row = int(c[1:]) - 1
+            sym = board[col][row]
+            card.append((col, row, sym))
+        return tuple(card)
+
+    def apply_remove(self, board, cards):
+        board_original = self.copy(board)
+        ds = self.convert_coord_to_card(board, cards)
+        try:
+            if ds and self.legal_remove(board, ds):
+                for s in ds:
+                    board[s[0]][s[1]] = ''
+            else:
+                print('That card choice is not valid and cannot be recycled')
+                board = board_original
+                return False
+        except Exception as e:
+            board = board_original
+            print('That card choice is not valid and cannot be recycled')
+            return False
+        return True
+
+    def recycle(self, board, to_remove, to_apply, last_move):
+        if to_remove.upper() == last_move.replace('0', '').upper():
+            print("Cannot recycle recently played move: " + to_remove)
+            return False
+        if self.apply_remove(board, to_remove):
+            return self.apply(board, to_apply)
+        return False
+
+    #TODO - Check if whether the removed state is valid
+    def legal_remove(self, board, dest):
+        return self.legal_card(dest)
+
     def legal(self, board, dest):
         for i, d in enumerate(dest):
             e, r = d[0], d[1]
@@ -52,10 +92,17 @@ class BoardSynth:
         return ord(char.upper())-65
 
     def dest(self, card):
-        orientation = int(card[1])
-        e = int(self.to_n(card[2]))
-        r = 0
+        if card[0] == '0':
+            orientation = int(card[1])
+            e = int(self.to_n(card[2]))
+            r = 0
+        else:
+            orientation = int(card[0])
+            e = int(self.to_n(card[1]))
+            r = 0
 
+        if len(card) == 3:
+            r = int(card[2])-1
         if len(card) == 4:
             r = int(card[3])-1
         elif len(card) == 5:
@@ -121,3 +168,27 @@ class BoardSynth:
     def new(width = 8, height = 12):
         width, height = 8, 12
         return [['' for _ in range(height)] for _ in range(width)]
+
+    def symbol_match(self, sym):
+        return {
+            'R▶': 'W◁',
+            'W△': 'R▼',
+            'W▷': 'R◀',
+            'R▲': 'W▽',
+            'R▷': 'W◀',
+            'W▲': 'R▽',
+            'W▶': 'R◁',
+            'R△': 'W▼'
+        }[sym]
+
+    def legal_card(self, card):
+        col1, row1, sym1 = card[0][0], card[0][1], card[0][2]
+        col2, row2, sym2 = card[1][0], card[1][1], card[1][2]
+        if sym1[1] == '▶' or sym1[1] == '▷':
+            return self.symbol_match(sym1) == sym2 \
+                and col1 == col2 - 1 and row1 == row2
+        elif sym1[1] == '△' or sym1[1] == '▲':
+            return self.symbol_match(sym1) == sym2 \
+                and col1 == col2 and row1 == row2 - 1
+        return False
+
