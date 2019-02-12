@@ -50,8 +50,6 @@ baz = BoardAnalyzer(ach)
 naive_sl = ElectronicSoul(bs, baz, "naive_single_layer", opp_choice)
 monkey = ElectronicSoul(bs, baz, "chaos_monkey", opp_choice)
 all_moves = []
-# to keep track of the number of moves)
-move_count = len(all_moves)
 
 p1["name"] = "PLAYER ONE"
 p1["token"] = choice
@@ -59,7 +57,7 @@ p1["soul"] = "organic"
 
 p2["name"] = "-naive-"
 p2["token"] = opp_choice
-p2["soul"] = naive_sl
+p2["soul"] = "organic"
 
 
 def get_move(player):
@@ -68,7 +66,7 @@ def get_move(player):
         move = input("{}, {}'s move: "
                      .format(player["token"], player["name"]))
         # to allow users to enter input containing spaces or different caps
-        move = re.sub(r'\s+', '', move).lower()
+        move = move.split(' ')
     else:
         move = clock(player["soul"].get_move)(board)
         print("{}, {}'s move: {}"
@@ -79,12 +77,13 @@ def get_move(player):
 
 os.system('clear')
 # the following will fill up the board, helping with the recycle implementation
-# bs.apply(board, ['0', '1', 'a', '1'], ['0', '6', 'b', '2'], ['0', '6', 'c', '1'], ['0', '3', 'd', '1'], ['0', '8', 'c', '3'], ['0', '2', 'A', '2'], ['0', '1', 'F', '1'], ['0', '8', 'H', '1'], ['0', '3', 'E', '2'], ['0', '5', 'E', '3'], ['0', '8', 'D', '2'], ['0', '1', 'D', '4'], ['0', '8', 'H', '3'], ['0', '8', 'H', '5'], ['0', '8', 'H', '7'], ['0', '8', 'H', '9'], ['0', '8', 'H', '1', '1'], ['0', '8', 'D', '5'], ['0', '8', 'D', '7'], ['0', '8', 'D', '9'], ['0', '8', 'D', '1', '1'], ['0', '4', 'A', '4'], ['0', '4', 'A', '6'], ['0', '4', 'A', '8'])
+# all_moves = [['0', '1', 'a', '1'], ['0', '6', 'b', '2'], ['0', '6', 'c', '1'], ['0', '3', 'd', '1'], ['0', '8', 'c', '3'], ['0', '2', 'A', '2'], ['0', '1', 'F', '1'], ['0', '8', 'H', '1'], ['0', '3', 'E', '2'], ['0', '5', 'E', '3'], ['0', '8', 'D', '2'], ['0', '1', 'D', '4'], ['0', '8', 'H', '3'], ['0', '8', 'H', '5'], ['0', '8', 'H', '7'], ['0', '8', 'H', '9'], ['0', '8', 'H', '11'], ['0', '8', 'D', '5'], ['0', '8', 'D', '7'], ['0', '8', 'D', '9'], ['0', '8', 'D', '1', '1'], ['0', '4', 'A', '4'], ['0', '4', 'A', '6'], ['0', '4', 'A', '8']]
+# bs.apply(board, ['0', '1', 'a', '1'], ['0', '6', 'b', '2'], ['0', '6', 'c', '1'], ['0', '3', 'd', '1'], ['0', '8', 'c', '3'], ['0', '2', 'A', '2'], ['0', '1', 'F', '1'], ['0', '8', 'H', '1'], ['0', '3', 'E', '2'], ['0', '5', 'E', '3'], ['0', '8', 'D', '2'], ['0', '1', 'D', '4'], ['0', '8', 'H', '3'], ['0', '8', 'H', '5'], ['0', '8', 'H', '7'], ['0', '8', 'H', '9'], ['0', '8', 'H', '11'], ['0', '8', 'D', '5'], ['0', '8', 'D', '7'], ['0', '8', 'D', '9'], ['0', '8', 'D', '1', '1'], ['0', '4', 'A', '4'], ['0', '4', 'A', '6'], ['0', '4', 'A', '8'])
 bs.render(board)
 
 while not winner:
 	# ensure number of moves has not exceeded maximum limit
-    if move_count >= MAX_MOVES:
+    if len(all_moves) >= MAX_MOVES:
     	winner = "the maximum number of moves have been reached. It is a draw, you both"
     	break
     while True:
