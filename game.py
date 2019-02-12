@@ -4,7 +4,7 @@ from analysis_cache import AnalysisCache
 from electronic_soul import ElectronicSoul
 from clock_it import clock
 import os
-import re
+
 
 # number of identical cards and maximum moves allowed in the game
 CARDS = 24
@@ -57,7 +57,7 @@ p1["soul"] = "organic"
 
 p2["name"] = "-naive-"
 p2["token"] = opp_choice
-p2["soul"] = "organic"
+p2["soul"] = "naive_sl"
 
 
 def get_move(player):
@@ -65,7 +65,7 @@ def get_move(player):
     if player["soul"] == "organic":
         move = input("{}, {}'s move: "
                      .format(player["token"], player["name"]))
-        # to allow users to enter input containing spaces or different caps
+        # to allow users to enter input containing spaces
         move = move.split(' ')
     else:
         move = clock(player["soul"].get_move)(board)
@@ -84,7 +84,7 @@ bs.render(board)
 while not winner:
 	# ensure number of moves has not exceeded maximum limit
     if len(all_moves) >= MAX_MOVES:
-    	winner = "the maximum number of moves have been reached. It is a draw, you both"
+    	winner = "the maximum number of moves has been reached. It is a draw, you both "
     	break
     while True:
         move = get_move(players[active])
@@ -109,4 +109,7 @@ while not winner:
     active = (active + 1) % 2
 
 print("Game over,", winner, "win!")
-print("Moves played:", all_moves)
+print("Moves played: ")
+for moves in all_moves:
+	print(" ".join(moves))
+

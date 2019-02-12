@@ -8,7 +8,9 @@ class BoardAnalyzer:
     def check_victory(self, board):
         # doesn't matter which side the analysis is done on for victory
         # but it's probably good to throw an error when people don't
-        # specify a side, sooooo
+        # specify a side
+        # TODO: need to add a condition, where if both sides have win conditions,
+        # the side that played the winning card wins the game
         dots, colors = self.analyze(board, "dots", verbose=False)
         if dots[4] and colors[4]:
             return "active"
@@ -87,7 +89,6 @@ class BoardAnalyzer:
         # |--
         # |
         # once you reach the square, you must start reducing the diagonal length
-
         dags = []
         cols = len(board)
         rows = len(board[0])
