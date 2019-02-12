@@ -68,7 +68,7 @@ def get_move(player):
         move = input("{}, {}'s move: "
                      .format(player["token"], player["name"]))
         # to allow users to enter input containing spaces or different caps
-        move = re.sub(r'\s + ', '', move).lower()
+        move = re.sub(r'\s+', '', move).lower()
     else:
         move = clock(player["soul"].get_move)(board)
         print("{}, {}'s move: {}"

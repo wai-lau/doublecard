@@ -99,8 +99,8 @@ class BoardSynth:
         else:
             orientation = int(card[0])
             e = int(self.to_n(card[1]))
-            r = int(card[2])-1
-
+            r = 0
+            
         # if len(card) == 3:
         #     r = int(card[2])-1
         # if len(card) == 4:
