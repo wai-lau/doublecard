@@ -28,9 +28,9 @@ class BoardSynth:
                 return False
         return True
 
-    def convert_coord_to_card(self, board, cards):
-        col1, row1 = self.to_n(cards[0]), int(cards[1]) - 1
-        col2, row2 = self.to_n(cards[2]), int(cards[3]) - 1
+    def coord_to_dest(self, board, coords):
+        col1, row1 = self.to_n(coords[0]), int(coords[1]) - 1
+        col2, row2 = self.to_n(coords[2]), int(coords[3]) - 1
         sym1, sym2 = board[col1][row1], board[col2][row2]
         return ((col1, row1, sym1),(col2, row2, sym2))
 
@@ -41,7 +41,7 @@ class BoardSynth:
                 for s in ds:
                     board[s[0]][s[1]] = ''
             else:
-                print('That card choice is not valid and cannot be recycled')
+                print('That card choice is invalid and cannot be recycled')
                 board = board_original
                 return False
         except Exception as e:
@@ -51,20 +51,20 @@ class BoardSynth:
         return True
 
     def recycle(self, board, to_remove, to_apply, last_move):
-        remove_ds = self.convert_coord_to_card(board, to_remove)
+        remove_ds = self.coord_to_dest(board, to_remove)
         last_ds = self.dest(last_move)
-        apply_ds = self.dest(to_apply)
         if remove_ds == last_ds:
             print("Cannot recycle recently played move: " + ' '.join(to_remove))
             return False
+        apply_ds = self.dest(to_apply)
         if remove_ds == apply_ds:
-            print("Invalid--card cannot remain in the same place!: " + ' '.join(to_remove))
+            print("Cannot place card in the same place!: " + ' '.join(to_remove))
             return False
         if self.apply_remove(board, remove_ds):
             return self.apply(board, to_apply)
         return False
 
-    #TODO - Check if whether the removed state is valid
+    #TODO - Check whether the removed state is valid
     def legal_remove(self, board, dest):
         return self.legal_card(dest)
 
@@ -99,7 +99,7 @@ class BoardSynth:
         else:
             orientation = int(card[0])
             e = int(self.to_n(card[1]))
-            r = 0
+            r = int(card[2])-1
             
         # if len(card) == 3:
         #     r = int(card[2])-1
@@ -168,7 +168,7 @@ class BoardSynth:
         width, height = 8, 12
         return [['' for _ in range(height)] for _ in range(width)]
 
-    def symbol_match(self, sym):
+    def symbol_pair(self, sym):
         return {
             'R▶': 'W◁',
             'W△': 'R▼',
@@ -180,14 +180,15 @@ class BoardSynth:
             'R△': 'W▼'
         }[sym]
 
+
     def legal_card(self, card):
         col1, row1, sym1 = card[0][0], card[0][1], card[0][2]
         col2, row2, sym2 = card[1][0], card[1][1], card[1][2]
         if sym1[1] == '▶' or sym1[1] == '▷':
-            return self.symbol_match(sym1) == sym2 \
+            return self.symbol_pair(sym1) == sym2 \
                 and col1 == col2 - 1 and row1 == row2
         elif sym1[1] == '△' or sym1[1] == '▲':
-            return self.symbol_match(sym1) == sym2 \
+            return self.symbol_pair(sym1) == sym2 \
                 and col1 == col2 and row1 == row2 - 1
         return False
 
