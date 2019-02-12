@@ -39,7 +39,7 @@ class ElectronicSoul:
     def chaos_naive(self, board):
         if all(not c[0] for c in board):
             return self.chaos_monkey(board)
-        if random()*100 < 33:
+        if random() * 100 < 33:
             print("CHAOS PLAYS")
             return self.chaos_monkey(board)
         else:

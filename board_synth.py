@@ -18,12 +18,12 @@ class BoardSynth:
                     for s in ds:
                         board[s[0]][s[1]] = s[2]
                 else:
-                    print("Illegal move: "+' '.join(c))
+                    print("Illegal move: " + ' '.join(c))
                     board = board_original
                     return False
             except Exception as e:
                 board = board_original
-                print("Illegal move: "+' '.join(c))
+                print("Illegal move: " + ' '.join(c))
                 print(e)
                 return False
         return True
@@ -80,17 +80,16 @@ class BoardSynth:
             # because we are only checking directly below,
             # there is the constraint that
             # we need to keep the order of the cards played
-
             # if second piece is above first
             # then we only need to check the first piece
             if i == 0 or r == dest[0][1]:
                 if r is not 0:
-                    if not board[e][r-1]:
+                    if not board[e][r - 1]:
                         return False
         return True
 
     def to_n(self, char):
-        return ord(char.upper())-65
+        return ord(char.upper()) - 65 
 
     def dest(self, card):
         if card[0] == '0':
@@ -110,21 +109,21 @@ class BoardSynth:
         #     r = int(card[3] + card[4])-1
 
         if orientation == 1:
-            return ((e, r, 'R▶'), (e+1, r, 'W◁'))
+            return ((e, r, 'R▶'), (e + 1, r, 'W◁'))
         if orientation == 2:
-            return ((e, r, 'W△'), (e, r+1, 'R▼'))
+            return ((e, r, 'W△'), (e, r + 1, 'R▼'))
         if orientation == 3:
-            return ((e, r, 'W▷'), (e+1, r, 'R◀'))
+            return ((e, r, 'W▷'), (e + 1, r, 'R◀'))
         if orientation == 4:
-            return ((e, r, 'R▲'), (e, r+1, 'W▽'))
+            return ((e, r, 'R▲'), (e, r + 1, 'W▽'))
         if orientation == 5:
-            return ((e, r, 'R▷'), (e+1, r, 'W◀'))
+            return ((e, r, 'R▷'), (e + 1, r, 'W◀'))
         if orientation == 6:
-            return ((e, r, 'W▲'), (e, r+1, 'R▽'))
+            return ((e, r, 'W▲'), (e, r + 1, 'R▽'))
         if orientation == 7:
-            return ((e, r, 'W▶'), (e+1, r, 'R◁'))
+            return ((e, r, 'W▶'), (e + 1, r, 'R◁'))
         if orientation == 8:
-            return ((e, r, 'R△'), (e, r+1, 'W▼'))
+            return ((e, r, 'R△'), (e, r + 1, 'W▼'))
 
     def render(self, board):
         t_board = zip(*board)
@@ -144,9 +143,9 @@ class BoardSynth:
     def to_symbol(self, string):
         if not string:
             return Back.BLACK + Fore.WHITE + '·'
-        coloured = ""
+        filled_in = ""
         if string[0].upper() == 'R' and string[1] in ['▷','△','▽','◁']:
-            coloured = self.fill_in(string[1])
+            filled_in = self.fill_in(string[1])
 
         bg = fg = None
 
@@ -155,11 +154,10 @@ class BoardSynth:
         else:
             bg = Back.RED
 
-        # This feels mildly racist
-        if not coloured:
+        if not filled_in:
             fg = Fore.BLACK + string[1]
         else:
-            fg = Fore.WHITE + coloured
+            fg = Fore.WHITE + filled_in
 
         return bg + fg
 

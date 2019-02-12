@@ -10,12 +10,12 @@ def blockPrint():
 def enablePrint():
     sys.stdout = sys.__stdout__
 
-def clock(func, times=1):
+def clock(func, times = 1):
    def func_wrapper(args=None):
        dt = datetime.now().microsecond
        result = None
        blockPrint()
-       for _ in range(times-1):
+       for _ in range(times - 1):
            if not args:
                result = func()
            if args:

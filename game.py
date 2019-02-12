@@ -30,6 +30,7 @@ def get_choice(choices):
     choice = ""
     while choice not in choices:
         choice = input(
+            "Welcome to Double Card!\n" +  
             "Which of [%s] would you like to play as? " % ", ".join(choices))
     return choice
 
@@ -67,7 +68,7 @@ def get_move(player):
         move = input("{}, {}'s move: "
                      .format(player["token"], player["name"]))
         # to allow users to enter input containing spaces or different caps
-        move = re.sub(r'\s+', '', move).lower()
+        move = re.sub(r'\s + ', '', move).lower()
     else:
         move = clock(player["soul"].get_move)(board)
         print("{}, {}'s move: {}"
@@ -77,24 +78,29 @@ def get_move(player):
 
 
 os.system('clear')
-# The following will fill up the board, helping with the recycle implementation
-# bs.apply(board, "01a1", "06b2", "06c1", "03d1", "08c3",'02A2', '01F1', '08H1', '03E2', '05E3', '08D2','01D4', '08H3', '08H5', '08H7', '08H9', '08H11', '08D5', '08D7', '08D9', '08D11', '04A4', '04A6')
+# the following will fill up the board, helping with the recycle implementation
+# bs.apply(board, ['0', '1', 'a', '1'], ['0', '6', 'b', '2'], ['0', '6', 'c', '1'], ['0', '3', 'd', '1'], ['0', '8', 'c', '3'], ['0', '2', 'A', '2'], ['0', '1', 'F', '1'], ['0', '8', 'H', '1'], ['0', '3', 'E', '2'], ['0', '5', 'E', '3'], ['0', '8', 'D', '2'], ['0', '1', 'D', '4'], ['0', '8', 'H', '3'], ['0', '8', 'H', '5'], ['0', '8', 'H', '7'], ['0', '8', 'H', '9'], ['0', '8', 'H', '1', '1'], ['0', '8', 'D', '5'], ['0', '8', 'D', '7'], ['0', '8', 'D', '9'], ['0', '8', 'D', '1', '1'], ['0', '4', 'A', '4'], ['0', '4', 'A', '6'], ['0', '4', 'A', '8'])
 bs.render(board)
 
 while not winner:
+	# ensure number of moves has not exceeded maximum limit
+    if move_count >= MAX_MOVES:
+    	winner = "the maximum number of moves have been reached. It is a draw, you both"
+    	break
     while True:
         move = get_move(players[active])
         if bs.apply(board, move):
             break
     all_moves.append(move)
-    os.system('clear')
+    # to get a visual trace after each move (for the demo)
+    # os.system('clear')
     bs.render(board)
     winner = baz.check_victory(board)
     if winner:
         if winner == "active":
             winner = players[active]['token']
         break
-    active = (active+1) % 2
+    active = (active + 1) % 2
 
 print("Game over,", winner, "win!")
 print("Moves played:", all_moves)

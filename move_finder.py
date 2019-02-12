@@ -5,12 +5,12 @@ class MoveFinder:
         vertical_spots = []
         horizontal_spots = []
         for n, c in enumerate(board):
-            h = int(len("".join(c))/2)
+            h = int(len("".join(c)) / 2)
             if h < 11:
                 vertical_spots.append((n,h))
-            if (h < 12 and n < width-1
-                and not board[n+1][h]
-                and (h == 0 or board[n+1][h-1])):
+            if (h < 12 and n < width - 1
+                and not board[n + 1][h]
+                and (h == 0 or board[n + 1][h - 1])):
                 horizontal_spots.append((n,h))
 
         return vertical_spots, horizontal_spots
@@ -23,15 +23,15 @@ class MoveFinder:
 
     def generate_moves(self, spot, orientation):
         moves = []
-        vert = (2,4,6,8)
-        horz = (1,3,5,7)
+        vert = (2, 4, 6, 8)
+        horz = (1, 3, 5, 7)
 
         rotations = (vert if orientation == "v" else horz)
         for i in rotations:
             moves.append("{}{}{}{}".format(
-                "0", i, self.to_char(spot[0]), spot[1]+1)
+                "0", i, self.to_char(spot[0]), spot[1] + 1)
             )
         return moves
 
     def to_char(self, col):
-        return chr(col+65)
+        return chr(col + 65)
