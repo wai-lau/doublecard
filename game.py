@@ -88,11 +88,18 @@ while not winner:
     	break
     while True:
         move = get_move(players[active])
-        if bs.apply(board, move):
-            break
-    all_moves.append(move)
+        if len(all_moves) >= CARDS:
+            to_remove = move[0:4]
+            to_apply = move[4:]
+            if bs.recycle(board, to_remove, to_apply, all_moves[-1]):
+                all_moves.append(to_apply)
+                break
+        else:
+            if bs.apply(board, move):
+                all_moves.append(move)
+                break
     # to get a visual trace after each move (for the demo)
-    # os.system('clear')
+    os.system('clear')
     bs.render(board)
     winner = baz.check_victory(board)
     if winner:
