@@ -37,7 +37,7 @@ class BoardSynth:
     def apply_remove(self, board, ds):
         board_original = self.copy(board)
         try:
-            if ds and self.legal_remove(board, ds):
+            if ds and self.legal_remove(board, ds) and self.legal_card(ds):
                 for s in ds:
                     board[s[0]][s[1]] = ''
             else:
@@ -64,9 +64,22 @@ class BoardSynth:
             return self.apply(board, to_apply)
         return False
 
-    #TODO - Check whether the removed state is valid
     def legal_remove(self, board, dest):
-        return self.legal_card(dest)
+        first_col, first_row = dest[0][0], dest[0][1]
+        second_col, second_row = dest[1][0], dest[1][1]
+
+        if first_col == second_col:
+            max_value = max([first_row, second_row])
+            if not board[first_col][max_value + 1]:
+                return True
+            else:
+                return False
+
+        elif first_row == second_row:
+            if not board[first_col][first_row + 1] and not board[second_col][second_row + 1]:
+                return True
+            else:
+                return False
 
     def legal(self, board, dest):
         for i, d in enumerate(dest):
