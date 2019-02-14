@@ -70,13 +70,16 @@ class BoardSynth:
 
         if first_col == second_col:
             max_value = max([first_row, second_row])
-            if not board[first_col][max_value + 1]:
+
+            if max_value+1 == len(board[0]) or not board[first_col][max_value + 1]:
                 return True
             else:
                 return False
 
         elif first_row == second_row:
-            if not board[first_col][first_row + 1] and not board[second_col][second_row + 1]:
+            if first_row+1 == len(board[0]):
+                return True
+            elif not board[first_col][first_row + 1] and not board[second_col][second_row + 1]:
                 return True
             else:
                 return False
