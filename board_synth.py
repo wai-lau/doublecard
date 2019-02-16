@@ -1,6 +1,5 @@
 from colorama import Fore, Back, Style
 from copy import deepcopy
-from re import findall
 # coordinates are board[column][row]
 # bottom left block is (A,0)
 
@@ -36,32 +35,30 @@ class BoardSynth:
 
     def apply_remove(self, board, ds):
         board_original = self.copy(board)
-        try:
-            if ds and self.legal_remove(board, ds) and self.legal_card(ds):
-                for s in ds:
-                    board[s[0]][s[1]] = ''
-            else:
-                print('That card choice is invalid and cannot be recycled')
-                board = board_original
-                return False
-        except Exception as e:
+        if ds and self.legal_remove(board, ds) and self.legal_card(ds):
+            for s in ds:
+                board[s[0]][s[1]] = ''
+        else:
+            print('That card choice is invalid and cannot be recycled')
             board = board_original
-            print('That card choice is not valid and cannot be recycled')
             return False
         return True
 
     def recycle(self, board, to_remove, to_apply, last_move):
-        remove_ds = self.coord_to_dest(board, to_remove)
-        last_ds = self.dest(last_move)
-        if remove_ds == last_ds:
-            print("Cannot recycle recently played move: " + ' '.join(to_remove))
-            return False
-        apply_ds = self.dest(to_apply)
-        if remove_ds == apply_ds:
-            print("Cannot place card in the same place!: " + ' '.join(to_remove))
-            return False
-        if self.apply_remove(board, remove_ds):
-            return self.apply(board, to_apply)
+        try:
+            remove_ds = self.coord_to_dest(board, to_remove)
+            last_ds = self.dest(last_move)
+            if remove_ds == last_ds:
+                print("Cannot recycle recently played move: " + ' '.join(to_remove))
+                return False
+            apply_ds = self.dest(to_apply)
+            if remove_ds == apply_ds:
+                print("Cannot place card in the same place!: " + ' '.join(to_remove))
+                return False
+            if self.apply_remove(board, remove_ds):
+                return self.apply(board, to_apply)
+        except Exception as e:
+            print('Invalid recycle move')
         return False
 
     def legal_remove(self, board, dest):
