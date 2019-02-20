@@ -9,8 +9,6 @@ class BoardAnalyzer:
         # doesn't matter which side the analysis is done on for victory
         # but it's probably good to throw an error when people don't
         # specify a side
-        # TODO: need to add a condition, where if both sides have win conditions,
-        # the side that played the winning card wins the game
         dots, colors = self.analyze(board, "dots", verbose=False)
         if dots[4] and colors[4]:
             return "active"
@@ -63,7 +61,7 @@ class BoardAnalyzer:
 
     def enemy_potential(self, points):
         pot = 0
-        # enemy triples are worth as much as a loss, since they will play that move 
+        # enemy triples are worth as much as a loss, since they will play that move
         for i, n in enumerate(points[2:]):
             pot = pot + {0:7, 1:10000, 2:1000000}[i]*n
         return pot

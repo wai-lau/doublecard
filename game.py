@@ -23,7 +23,6 @@ players = [p1, p2]
 active = 0
 winner = False
 
-
 # for manual play, prompt the user to choose between dots or colors
 # assign other choice to the electronic soul
 def get_choice(choices):
@@ -61,22 +60,22 @@ p2["soul"] = "organic"
 def get_move(player):
     move = ""
     if player["soul"] == "organic":
-        move = input("{}, {}'s move: "
-                     .format(player["token"], player["name"]))
+        move = input("{}: {}, {}'s move: "
+                     .format(len(all_moves), player["token"], player["name"]))
         # to allow users to enter input containing spaces
         move = move.split(' ')
     else:
         move = clock(player["soul"].get_move)(board)
-        print("{}, {}'s move: {}"
-              .format(player["token"], player["name"], move))
-        input("Press enter.")
+        print("{}: {}, {}'s move: {}"
+              .format(len(all_moves), player["token"], player["name"], move))
+        input("Press Enter.")
     return move
 
 
 os.system('clear')
 # the following will fill up the board, helping with the recycle implementation
-# all_moves = [['0', '1', 'a', '1'], ['0', '6', 'b', '2'], ['0', '6', 'c', '1'], ['0', '3', 'd', '1'], ['0', '8', 'c', '3'], ['0', '2', 'A', '2'], ['0', '1', 'F', '1'], ['0', '8', 'H', '1'], ['0', '3', 'E', '2'], ['0', '5', 'E', '3'], ['0', '8', 'D', '2'], ['0', '1', 'D', '4'], ['0', '8', 'H', '3'], ['0', '8', 'H', '5'], ['0', '8', 'H', '7'], ['0', '8', 'H', '9'], ['0', '8', 'H', '11'], ['0', '8', 'D', '5'], ['0', '8', 'D', '7'], ['0', '8', 'D', '9'], ['0', '8', 'D', '11'], ['0', '4', 'A', '4'], ['0', '4', 'A', '6'], ['0', '4', 'A', '8']]
-# bs.apply(board, ['0', '1', 'a', '1'], ['0', '6', 'b', '2'], ['0', '6', 'c', '1'], ['0', '3', 'd', '1'], ['0', '8', 'c', '3'], ['0', '2', 'A', '2'], ['0', '1', 'F', '1'], ['0', '8', 'H', '1'], ['0', '3', 'E', '2'], ['0', '5', 'E', '3'], ['0', '8', 'D', '2'], ['0', '1', 'D', '4'], ['0', '8', 'H', '3'], ['0', '8', 'H', '5'], ['0', '8', 'H', '7'], ['0', '8', 'H', '9'], ['0', '8', 'H', '11'], ['0', '8', 'D', '5'], ['0', '8', 'D', '7'], ['0', '8', 'D', '9'], ['0', '8', 'D', '11'], ['0', '4', 'A', '4'], ['0', '4', 'A', '6'], ['0', '4', 'A', '8'])
+# all_moves = [['0', '1', 'a', '1'], ['0', '6', 'b', '2'], ['0', '6', 'c', '1'], ['0', '3', 'd', '1'], ['0', '8', 'c', '3'], ['0', '2', 'A', '2'], ['0', '1', 'F', '1'], ['0', '8', 'H', '1'], ['0', '3', 'E', '2'], ['0', '5', 'E', '3'], ['0', '8', 'D', '2'], ['0', '1', 'D', '4'], ['0', '8', 'H', '3'], ['0', '8', 'H', '5'], ['0', '8', 'H', '7'], ['0', '8', 'H', '9'], ['0', '8', 'H', '11'], ['0', '8', 'D', '5'], ['0', '8', 'D', '7'], ['0', '8', 'D', '9'], ['0', '8', 'D', '11'], ['0', '4', 'A', '4'], ['0', '4', 'A', '6']]
+# bs.apply(board, ['0', '1', 'a', '1'], ['0', '6', 'b', '2'], ['0', '6', 'c', '1'], ['0', '3', 'd', '1'], ['0', '8', 'c', '3'], ['0', '2', 'A', '2'], ['0', '1', 'F', '1'], ['0', '8', 'H', '1'], ['0', '3', 'E', '2'], ['0', '5', 'E', '3'], ['0', '8', 'D', '2'], ['0', '1', 'D', '4'], ['0', '8', 'H', '3'], ['0', '8', 'H', '5'], ['0', '8', 'H', '7'], ['0', '8', 'H', '9'], ['0', '8', 'H', '11'], ['0', '8', 'D', '5'], ['0', '8', 'D', '7'], ['0', '8', 'D', '9'], ['0', '8', 'D', '11'], ['0', '4', 'A', '4'], ['0', '4', 'A', '6'])
 bs.render(board)
 
 while not winner:
@@ -86,7 +85,7 @@ while not winner:
             to_remove = move[0:4]
             to_apply = move[4:]
             if bs.recycle(board, to_remove, to_apply, all_moves[-1]):
-                all_moves.append(to_apply)
+                all_moves.append(move)
                 break
         else:
             if bs.apply(board, move):

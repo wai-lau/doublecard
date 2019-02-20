@@ -28,10 +28,11 @@ class MoveFinder:
 
         rotations = (vert if orientation == "v" else horz)
         for i in rotations:
-            moves.append("{}{}{}{}".format(
-                "0", i, self.to_char(spot[0]), spot[1] + 1)
-            )
+            moves.append(("0", i, self.to_char(spot[0]), spot[1] + 1))
         return moves
 
     def to_char(self, col):
         return chr(col + 65)
+
+    def generate_recyclable(self, board, all_moves):
+        pass
