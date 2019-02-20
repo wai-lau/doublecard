@@ -58,7 +58,7 @@ class BoardSynth:
             if self.apply_remove(board, remove_ds):
                 return self.apply(board, to_apply)
         except Exception as e:
-            print('Invalid recycle move')
+            print('Invalid recycle move: ', e)
         return False
 
     def legal_remove(self, board, dest):

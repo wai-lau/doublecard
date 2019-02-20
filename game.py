@@ -30,16 +30,14 @@ def get_choice(choices):
     choice = ""
     while choice not in choices:
         choice = input(
-            "Welcome to Double Card!\n" +  
+            "Welcome to Double Card!\n" +
             "Which of [%s] would you like to play as? " % ", ".join(choices))
     return choice
-
-
 choice = get_choice(["dots", "colors"])
 opp_choice = ""
 
 if choice == "dots":
-    opp_choice == "colors"
+    opp_choice = "colors"
 else:
     opp_choice = "dots"
 
@@ -55,9 +53,9 @@ p1["name"] = "PLAYER ONE"
 p1["token"] = choice
 p1["soul"] = "organic"
 
-p2["name"] = "-naive-"
+p2["name"] = "PLAYER TWO"
 p2["token"] = opp_choice
-p2["soul"] = "naive_sl"
+p2["soul"] = "organic"
 
 
 def get_move(player):
@@ -82,10 +80,6 @@ os.system('clear')
 bs.render(board)
 
 while not winner:
-	# ensure number of moves has not exceeded maximum limit
-    if len(all_moves) >= MAX_MOVES:
-    	winner = "the maximum number of moves has been reached. It is a draw, you both "
-    	break
     while True:
         move = get_move(players[active])
         if len(all_moves) >= CARDS:
@@ -98,18 +92,23 @@ while not winner:
             if bs.apply(board, move):
                 all_moves.append(move)
                 break
-    # to get a visual trace after each move (for the demo)
     os.system('clear')
     bs.render(board)
     winner = baz.check_victory(board)
+
     if winner:
         if winner == "active":
             winner = players[active]['token']
+        print("Game over,", winner, "win!")
         break
+
+    if len(all_moves) >= MAX_MOVES:
+        print("The maximum number of moves has been reached. It is a draw.")
+        break
+
     active = (active + 1) % 2
 
-print("Game over,", winner, "win!")
 print("Moves played: ")
 for moves in all_moves:
-	print(" ".join(moves))
+    print(" ".join(moves))
 
