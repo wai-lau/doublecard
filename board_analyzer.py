@@ -5,19 +5,12 @@ class BoardAnalyzer:
     def __init__(self, ach=None):
         self.ach = ach
 
-    def check_victory(self, board):
-        # doesn't matter which side the analysis is done on for victory
-        # but it's probably good to throw an error when people don't
-        # specify a side
-        dots, colors = self.analyze(board, "dots", verbose=False)
-        if dots[4] and colors[4]:
-            return "active"
-        elif dots[4]:
-            return "dots"
-        elif colors[4]:
-            return "colors"
+    def check_victory(self, board, token):
+        heuristic = self.analyze(board, token)
+        if heuristic > 400000:
+            return token
 
-    def analyze(self, board, token, verbose=False):
+    def analyze(self, board, token):
         t_board = list(zip(*board))
 
         if not "".join(t_board[0]):
@@ -31,54 +24,16 @@ class BoardAnalyzer:
 
         lines = cols + rows + dags
 
-        points = list(zip(*map(self.fetch_line, lines)))
-        dot_points = list(map(sum, list(zip(*points[0]))))
-        color_points = list(map(sum, list(zip(*points[1]))))
-
-        if verbose:
-            self.print_analysis((dot_points, color_points))
-
-        return dot_points, color_points
-
-    def heuristic(self, board, token, verbose=False):
-        d, c = self.analyze(board, token, verbose)
-        pot = 0
+        lines = map(self.convert_line, lines)
+        dots, colors = zip(*lines)
         if token == "dots":
-            pot = self.potential(d) - self.enemy_potential(c)
-        else:
-            pot = self.potential(c) - self.enemy_potential(d)
-        if verbose:
-            print(pot)
-        return pot
+            return (sum(self.fetch_line(d, 0) for d in dots) -
+                    sum(self.fetch_line(c, 1) for c in colors))
+        return (sum(self.fetch_line(c, 0) for c in colors) -
+                sum(self.fetch_line(d, 1) for d in dots))
 
-    def potential(self, points):
-        pot = 0
-        # since we take a subset, points[0] is the number of doubles
-        # using a multiple of 100 if it outclasses in all cases
-        for i, n in enumerate(points[2:]):
-            pot = pot + {0:2, 1:7, 2:1000000000}[i]*n
-        return pot
-
-    def enemy_potential(self, points):
-        pot = 0
-        # enemy triples are worth as much as a loss, since they will play that move
-        for i, n in enumerate(points[2:]):
-            pot = pot + {0:7, 1:10000, 2:1000000}[i]*n
-        return pot
-
-    def print_analysis(self, analysis):
-        dot_points = analysis[0]
-        color_points = analysis[1]
-        for i in range(1,5):
-            print("D: {} potential 4-in-a-row group with {} filled."
-                  .format(dot_points[i], i))
-            print("C: {} potential 4-in-a-row group with {} filled."
-                  .format(color_points[i], i))
-
-    def fetch_line(self, line):
-        line = self.convert_line(line)
-        return (self.ach.cache[line[0]],
-                self.ach.cache[line[1]])
+    def fetch_line(self, line, possesion):
+        return (self.ach.cache[line][possesion])
 
     def diagonals(self, board, diag=4):
         # This algo assumes there are more rows than columns
