@@ -10,10 +10,6 @@ import os
 CARDS = 24
 MAX_MOVES = 60
 
-# if not manual play, insert the following as default token in below ElectronicSoul instances
-NAIVE_DEFAULT = "dots"
-MONKEY_DEFAULT = "colors"
-
 p1 = {}
 p2 = {}
 
@@ -35,7 +31,7 @@ def get_choice(choices):
 # choice = get_choice(["dots", "colors"])
 opp_choice = ""
 
-choice = "dots"
+choice = "colors"
 
 if choice == "dots":
     opp_choice = "colors"
@@ -49,6 +45,8 @@ baz = BoardAnalyzer(ach)
 naive_sl = ElectronicSoul(bs, baz, "naive_single_layer")
 naive_chaos = ElectronicSoul(bs, baz, "chaos_naive")
 monkey = ElectronicSoul(bs, baz, "chaos_monkey")
+minimax = ElectronicSoul(bs, baz, "minimax")
+chaos_minimax = ElectronicSoul(bs, baz, "chaos_minimax")
 all_moves = []
 
 p1["name"] = "PLAYER ONE"
@@ -57,7 +55,7 @@ p1["soul"] = naive_chaos
 
 p2["name"] = "PLAYER TWO"
 p2["token"] = opp_choice
-p2["soul"] = naive_sl
+p2["soul"] = minimax
 
 # the following will fill up the board, helping with the recycle implementation
 # all_moves = [['0', '1', 'a', '1'], ['0', '6', 'b', '2'], ['0', '6', 'c', '1'], ['0', '3', 'd', '1'], ['0', '8', 'c', '3'], ['0', '2', 'A', '2'], ['0', '1', 'F', '1'], ['0', '8', 'H', '1'], ['0', '3', 'E', '2'], ['0', '5', 'E', '3'], ['0', '8', 'D', '2'], ['0', '1', 'D', '4'], ['0', '8', 'H', '3'], ['0', '8', 'H', '5'], ['0', '8', 'H', '7'], ['0', '8', 'H', '9'], ['0', '8', 'H', '11'], ['0', '8', 'D', '5'], ['0', '8', 'D', '7'], ['0', '8', 'D', '9'], ['0', '8', 'D', '11'], ['0', '4', 'A', '4'], ['0', '4', 'A', '6']]
@@ -99,7 +97,6 @@ def get_move(player, last_move=None, moves_played_count=None):
         move = clock(player["soul"].get_move)(board, player["token"], last_move, moves_played_count)
         print("{}: {}, {}'s move: {}"
               .format(len(all_moves)+1, player["token"], player["name"], move))
-        input("Press Enter.")
     return move
 
 os.system('clear')
@@ -110,6 +107,10 @@ if os.name == 'nt':
 # bs.apply(board, *all_moves)
 
 bs.render(board)
+
+dot_wins = 0
+color_wins = 0
+meta_moves = []
 
 while not winner:
     while True:
@@ -130,6 +131,19 @@ while not winner:
     winner = baz.check_victory(board, players[active]['token'])
 
     if winner:
+        if winner == "dots":
+            dot_wins = dot_wins + 1
+        if winner == "colors":
+            color_wins = color_wins + 1
+            meta_moves.append(all_moves)
+        if color_wins < 2:
+            winner = ""
+            active = 0
+            all_moves = []
+            board = bs.new()
+            os.system('clear')
+            bs.render(board)
+            continue
         print("Game over,", winner, "win!")
         break
 
@@ -139,6 +153,8 @@ while not winner:
 
     active = (active + 1) % 2
 
-print("Moves played: ")
-print(all_moves)
+print("Dot wins: ", dot_wins)
+print("Color wins: ", color_wins)
+print("Color win games: ")
+print(meta_moves)
 

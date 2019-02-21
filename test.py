@@ -17,5 +17,7 @@ bs.apply(board, *all_moves)
 
 bs.render(board)
 mf = MoveFinder(bs)
-es = ElectronicSoul(bs, baz, "naive_single_layer", "dots")
+es = ElectronicSoul(bs, baz, "naive_single_layer")
 recyclable = clock(mf.find_recyclable)(board, all_moves[-1])
+
+import ipdb; ipdb.set_trace()

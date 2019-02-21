@@ -54,10 +54,10 @@ class AnalysisCache:
         # since we take a subset, in_a_rows[0] is the number of doubles
         # using a multiple of 20 if it outclasses in all cases
         for i, n in enumerate(in_a_rows[2:]):
-            ours = ours + {0:2, 1:7, 2:400000}[i]*n
+            ours = ours + {0:2, 1:12, 2:600000}[i]*n
         theirs = 0
         # enemy triples are worth as much as a loss, since they will play that move
         for i, n in enumerate(in_a_rows[2:]):
-            theirs = theirs + {0:7, 1:1000, 2:20000}[i]*n
+            theirs = theirs + {0:12, 1:1000, 2:20000}[i]*n
         return (ours, theirs)
 
