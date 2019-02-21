@@ -1,9 +1,9 @@
 import shelve
 
 class AnalysisCache:
-    def __init__(self, rebuild=False):
+    def __init__(self, filename, rebuild=False):
         self.cache = {}
-        with shelve.open("analysis.pkl") as shelf:
+        with shelve.open(filename) as shelf:
             if rebuild or not shelf:
                 self.generate_cache(level=12)
                 shelf['cache'] = self.cache

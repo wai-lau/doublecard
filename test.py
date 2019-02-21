@@ -7,7 +7,7 @@ from clock_it import clock
 import os
 
 bs = BoardSynth()
-ach = AnalysisCache()
+ach = AnalysisCache("analysis.pkl")
 baz = BoardAnalyzer(ach)
 
 board = bs.new()

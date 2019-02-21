@@ -40,10 +40,6 @@ class ElectronicSoul:
             self.bs.apply(b, m)
             if (depth + 1 >= max_depth):
                 h = self.baz.analyze(b, token)
-                if random() * 100 < 1:
-                    os.system('clear')
-                    self.bs.render(b)
-                    print("\n Analysis:", h)
                 if h > best_score:
                     best_score = h
                     best_move = m

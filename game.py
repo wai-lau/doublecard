@@ -40,7 +40,7 @@ else:
 
 bs = BoardSynth()
 board = bs.new()
-ach = AnalysisCache()
+ach = AnalysisCache("analysis.pkl")
 baz = BoardAnalyzer(ach)
 naive_sl = ElectronicSoul(bs, baz, "naive_single_layer")
 naive_chaos = ElectronicSoul(bs, baz, "chaos_naive")
