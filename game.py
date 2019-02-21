@@ -51,7 +51,7 @@ all_moves = []
 
 p1["name"] = "PLAYER ONE"
 p1["token"] = choice
-p1["soul"] = naive_chaos
+p1["soul"] = "organic"
 
 p2["name"] = "PLAYER TWO"
 p2["token"] = opp_choice
@@ -131,19 +131,6 @@ while not winner:
     winner = baz.check_victory(board, players[active]['token'])
 
     if winner:
-        if winner == "dots":
-            dot_wins = dot_wins + 1
-        if winner == "colors":
-            color_wins = color_wins + 1
-            meta_moves.append(all_moves)
-        if color_wins < 2:
-            winner = ""
-            active = 0
-            all_moves = []
-            board = bs.new()
-            os.system('clear')
-            bs.render(board)
-            continue
         print("Game over,", winner, "win!")
         break
 
@@ -156,5 +143,4 @@ while not winner:
 print("Dot wins: ", dot_wins)
 print("Color wins: ", color_wins)
 print("Color win games: ")
-print(meta_moves)
-
+print(all_moves)
