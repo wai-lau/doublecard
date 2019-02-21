@@ -53,3 +53,9 @@ board_synth.render(board)
    ABCDEFGH
 ```
 The main loop should keep track of the moves that have been played in order to recycle moves during that stage.
+
+To run on the school computer for demo purposes: 
+1. Download coloroma and copy paste files into the repository directory
+2. cd into the repository directory 
+3. Type in: `"C:\Program Files (x86)\Python36-32\python.exe" game.py`
+
