@@ -116,19 +116,19 @@ class BoardSynth:
             r = int(card[2])-1
 
         if orientation == 1:
-            return ((e, r, 'R▶'), (e + 1, r, 'W◁'))
+            return ((e, r, 'R►'), (e + 1, r, 'W◁'))
         if orientation == 2:
             return ((e, r, 'W△'), (e, r + 1, 'R▼'))
         if orientation == 3:
-            return ((e, r, 'W▷'), (e + 1, r, 'R◀'))
+            return ((e, r, 'W▷'), (e + 1, r, 'R◄'))
         if orientation == 4:
             return ((e, r, 'R▲'), (e, r + 1, 'W▽'))
         if orientation == 5:
-            return ((e, r, 'R▷'), (e + 1, r, 'W◀'))
+            return ((e, r, 'R▷'), (e + 1, r, 'W◄'))
         if orientation == 6:
             return ((e, r, 'W▲'), (e, r + 1, 'R▽'))
         if orientation == 7:
-            return ((e, r, 'W▶'), (e + 1, r, 'R◁'))
+            return ((e, r, 'W►'), (e + 1, r, 'R◁'))
         if orientation == 8:
             return ((e, r, 'R△'), (e, r + 1, 'W▼'))
 
@@ -143,7 +143,7 @@ class BoardSynth:
 
     def print_instructions(self):
         print("\n " +            "".join(map(lambda x: self.to_symbol(x), [""  ,""  ,""  ,'R▼',""  ,""  ,""  ,""  ,'W▽',""  ,""  ,""  ,"" ,'R▽',""  ,""  ,""  ,""  ,'W▼'])))
-        print(Back.BLACK + " " + "".join(map(lambda x: self.to_symbol(x), ['R▶','W◁',""  ,'W△',""  ,'W▷','R◀',""  ,'R▲',""  ,'R▷','W◀',"" ,'W▲',""  ,'W▶','R◁',""  ,'R△'])))
+        print(Back.BLACK + " " + "".join(map(lambda x: self.to_symbol(x), ['R►','W◁',""  ,'W△',""  ,'W▷','R◄',""  ,'R▲',""  ,'R▷','W◄',"" ,'W▲',""  ,'W►','R◁',""  ,'R△'])))
         print(Style.RESET_ALL + "\n 1  2 3  4 5  6 7  8")
         print()
 
@@ -151,7 +151,7 @@ class BoardSynth:
         if not string:
             return Back.BLACK + Fore.WHITE + '·'
         filled_in = ""
-        if string[0].upper() == 'R' and string[1] in ['▷','△','▽','◁']:
+        if string[1] in ['▷','△','▽','◁']:
             filled_in = self.fill_in(string[1])
 
         bg = fg = None
@@ -164,12 +164,12 @@ class BoardSynth:
         if not filled_in:
             fg = Fore.BLACK + string[1]
         else:
-            fg = Fore.WHITE + filled_in
+            fg = Fore.BLACK + Style.BRIGHT + filled_in + Style.RESET_ALL
 
         return bg + fg
 
     def fill_in(self, sym):
-        return {'▷':'▶','△':'▲','▽':'▼','◁':'◀'}[sym]
+        return {'▷':'►','△':'▲','▽':'▼','◁':'◄'}[sym]
 
     def new(width = 8, height = 12):
         width, height = 8, 12
@@ -177,13 +177,13 @@ class BoardSynth:
 
     def symbol_pair(self, sym):
         return {
-            'R▶': 'W◁',
+            'R►': 'W◁',
             'W△': 'R▼',
-            'W▷': 'R◀',
+            'W▷': 'R◄',
             'R▲': 'W▽',
-            'R▷': 'W◀',
+            'R▷': 'W◄',
             'W▲': 'R▽',
-            'W▶': 'R◁',
+            'W►': 'R◁',
             'R△': 'W▼'
         }[sym]
 
@@ -191,17 +191,16 @@ class BoardSynth:
     def legal_card(self, card):
         col1, row1, sym1 = card[0][0], card[0][1], card[0][2]
         col2, row2, sym2 = card[1][0], card[1][1], card[1][2]
-        if sym1[1] == '▶' or sym1[1] == '▷':
+        if sym1[1] == '►' or sym1[1] == '▷':
             return self.symbol_pair(sym1) == sym2 \
                 and col1 == col2 - 1 and row1 == row2
         elif sym1[1] == '△' or sym1[1] == '▲':
             return self.symbol_pair(sym1) == sym2 \
                 and col1 == col2 and row1 == row2 - 1
-        elif sym2[1] == '▶' or sym2[1] == '▷':
+        elif sym2[1] == '►' or sym2[1] == '▷':
             return self.symbol_pair(sym2) == sym1 \
                 and col2 == col1 - 1 and row1 == row2
         elif sym2[1] == '△' or sym2[1] == '▲':
             return self.symbol_pair(sym2) == sym1 \
                 and col1 == col2 and row2 == row1 - 1
         return False
-

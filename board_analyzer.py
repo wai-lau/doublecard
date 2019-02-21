@@ -120,7 +120,7 @@ class BoardAnalyzer:
                 dot = dot + "0"
                 color = color + "0"
                 continue
-            if c[1] in ['▶','▲','▼','◀']:
+            if c[1] in ['►','▲','▼','◄']:
                 dot = dot + "1"
             else:
                 dot = dot + "2"
@@ -129,4 +129,3 @@ class BoardAnalyzer:
             else:
                 color = color + "2"
         return (dot, color)
-
