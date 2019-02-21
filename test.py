@@ -12,21 +12,11 @@ baz = BoardAnalyzer(ach)
 
 board = bs.new()
 
-# blocking the 4 in a row gives enemy 3 in a row anyway
-# bs.apply(board, "04d1", "06b1", "08c1", "04d3", "05f1")
-# NOT FIXED
-# but also: What do?
-
-# not blocking the 4 in a row, gives yourself more points,
-# asymmetric heuristics should fix this one
-# bs.apply(board, "03c1", "06c2", "08f1", "02e1", "02d2")
-# bs.apply(board, "01a1", "06b2", "06c1", "03d1", "08c3")
-# FIXED
-
+all_moves = [['0', '5', 'a', '1'], ['0', '5', 'a', '2'], ['0', '5', 'a', '3'], ['0', '7', 'a', '4'], ['0', '7', 'a', '5'], ['0', '7', 'a', '6'], ['0', '5', 'c', '1'], ['0', '5', 'c', '2'], ['0', '5', 'c', '3'], ['0', '7', 'c', '4'], ['0', '7', 'c', '5'], ['0', '7', 'c', '6'], ['0', '5', 'e', '1'], ['0', '5', 'e', '2'], ['0', '5', 'e', '3'], ['0', '7', 'e', '4'], ['0', '7', 'e', '5'], ['0', '7', 'e', '6'], ['0', '5', 'g', '1'], ['0', '5', 'g', '2'], ['0', '5', 'g', '3'], ['0', '7', 'g', '4'], ['0', '7', 'g', '5'], ['0', '7', 'g', '6']]
+bs.apply(board, *all_moves)
 
 bs.render(board)
-mf = MoveFinder()
+mf = MoveFinder(bs)
 es = ElectronicSoul(bs, baz, "naive_single_layer", "dots")
-print(es.get_move(board))
-
-import ipdb; ipdb.set_trace()
+recyclable = clock(mf.find_recyclable)(board, all_moves[-1])
+print(len(recyclable))

@@ -1,4 +1,7 @@
 class MoveFinder:
+    def __init__(self, bs):
+        self.bs = bs
+
     def open_spots(self, board):
         height = len(board[0])
         width = len(board)
@@ -28,11 +31,51 @@ class MoveFinder:
 
         rotations = (vert if orientation == "v" else horz)
         for i in rotations:
-            moves.append(("0", i, self.to_char(spot[0]), spot[1] + 1))
+            moves.append([i, self.to_char(spot[0]), spot[1] + 1])
         return moves
 
     def to_char(self, col):
         return chr(col + 65)
 
-    def generate_recyclable(self, board, all_moves):
-        pass
+    def find_recyclable(self, board, last_move):
+        moves = []
+        for c, col in enumerate(board):
+            col_s = "".join(col)
+            if not col_s:
+                continue
+            last_char = col_s[-1]
+            height = int(len(col_s)/2)-1
+            
+            # ordering of remove_coord is guaranteed
+            if last_char == '▷' or last_char == '▶':
+                remove_coord = [self.to_char(c), height+1, self.to_char(c+1), height+1]
+            elif last_char == '▽' or last_char == '▼':
+                remove_coord = [self.to_char(c), height, self.to_char(c), height+1]
+            else:
+                continue
+
+            remove_ds = self.bs.coord_to_dest(board, remove_coord)
+
+            b = self.bs.copy(board)
+            if self.bs.remove(
+                b, remove_ds,
+                last_move
+            ):
+                moves.extend(self.generate_recycle_moves(b, remove_coord, remove_ds))
+        return moves
+
+    def generate_recycle_moves(self, board, remove_coord, remove_ds):
+        moves_after = self.find_moves(board)
+        orientation = 0
+        for i in range(1,9):
+            dest_sym = self.bs.dest([i, 'A', 1])[0][2]
+            if remove_ds[0][2] == dest_sym:
+                orientation = i;
+                break
+        try:
+            remove_card = [orientation, remove_coord[0], remove_coord[1]]
+            moves_after.remove(remove_card)
+        except ValueError:
+            pass
+        return list(map(lambda x: remove_coord + x, moves_after))
+

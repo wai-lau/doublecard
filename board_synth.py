@@ -39,31 +39,30 @@ class BoardSynth:
         try:
             remove_ds = self.coord_to_dest(board, to_remove)
             apply_ds = self.dest(to_apply)
-            last_ds = self.dest(last_move[-3:])
 
-            if remove_ds == last_ds or tuple(reversed(remove_ds)) == last_ds:
-                print("Cannot recycle recently played move: " + ' '.join(to_remove))
-                return False
             if remove_ds == apply_ds or tuple(reversed(remove_ds)) == apply_ds:
                 print("Cannot place card in the same place!: " + ' '.join(to_remove))
                 return False
 
-            if remove_ds and self.legal_remove(board, remove_ds):
-                for s in remove_ds:
-                    board[s[0]][s[1]] = ''
-            else:
-                print("Board reverted, illegal remove")
-                board = board_original
-                return False
-
-            if apply_ds and self.apply(board, to_apply):
+            if apply_ds and self.remove(board, remove_ds, last_move)\
+                        and self.apply(board, to_apply):
                 return True
 
         except Exception as e:
             print('Invalid recycle move:', e)
 
-        print("Board reverted, illegal recycle")
         board = board_original
+        print("Board reverted, illegal recycle.")
+        return False
+
+    def remove(self, board, remove_ds, last_move):
+        last_ds = self.dest(last_move[-3:])
+        if remove_ds == last_ds or tuple(reversed(remove_ds)) == last_ds:
+            return False
+        if remove_ds and self.legal_remove(board, remove_ds):
+            for s in remove_ds:
+                board[s[0]][s[1]] = ''
+            return True
         return False
 
     def legal_remove(self, board, dest):

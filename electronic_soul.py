@@ -3,18 +3,21 @@ from move_finder import MoveFinder
 
 class ElectronicSoul:
     def __init__(self, bs, baz, method, token):
-        self.mf = MoveFinder()
+        self.mf = MoveFinder(bs)
         self.bs = bs
         self.baz = baz
         self.token = token
         if method == "naive_single_layer":
+            self.method = self.naive_single_layer
             self.method = self.naive_single_layer
         elif method == "chaos_monkey":
             self.method = self.chaos_monkey
         elif method == "chaos_naive":
             self.method = self.chaos_naive
 
-    def get_move(self, board):
+    def get_move(self, board, last_move):
+        if this_move_number > 24:
+            return self.recycle(board)
         return self.method(board)
 
     def naive_single_layer(self, board):
