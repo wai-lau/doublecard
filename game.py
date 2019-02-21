@@ -25,7 +25,7 @@ def get_choice(choices):
     choice = ""
     while choice not in choices:
         choice = input(
-            "Welcome to Double Card!\n" +
+            "Welcome to Double Card!\n"
             "Which of [%s] would you like to play as? " % ", ".join(choices))
     return choice
 # choice = get_choice(["dots", "colors"])
@@ -49,11 +49,11 @@ minimax = ElectronicSoul(bs, baz, "minimax")
 chaos_minimax = ElectronicSoul(bs, baz, "chaos_minimax")
 all_moves = []
 
-p1["name"] = "PLAYER ONE"
+p1["name"] = "wai"
 p1["token"] = choice
 p1["soul"] = "organic"
 
-p2["name"] = "PLAYER TWO"
+p2["name"] = "minimax"
 p2["token"] = opp_choice
 p2["soul"] = minimax
 
@@ -97,6 +97,7 @@ def get_move(player, last_move=None, moves_played_count=None):
         move = clock(player["soul"].get_move)(board, player["token"], last_move, moves_played_count)
         print("{}: {}, {}'s move: {}"
               .format(len(all_moves)+1, player["token"], player["name"], move))
+        input("Press Enter.")
     return move
 
 os.system('clear')
@@ -106,12 +107,17 @@ if os.name == 'nt':
 # all_moves = [['0', '1', 'a', '1'], ['0', '6', 'b', '2'], ['0', '6', 'c', '1'], ['0', '3', 'd', '1'], ['0', '8', 'c', '3'], ['0', '2', 'A', '2'], ['0', '1', 'F', '1'], ['0', '8', 'H', '1'], ['0', '3', 'E', '2'], ['0', '5', 'E', '3'], ['0', '8', 'D', '2'], ['0', '1', 'D', '4'], ['0', '8', 'H', '3'], ['0', '8', 'H', '5'], ['0', '8', 'H', '7'], ['0', '8', 'H', '9'], ['0', '8', 'H', '11'], ['0', '8', 'D', '5'], ['0', '8', 'D', '7'], ['0', '8', 'D', '9'], ['0', '8', 'D', '11'], ['0', '4', 'A', '4'], ['0', '4', 'A', '6']]
 # bs.apply(board, *all_moves)
 
-bs.render(board)
+def clear():
+    if os.name == 'nt':
+        os.system("cls")
+    else:
+        os.system("clear")
 
 dot_wins = 0
 color_wins = 0
 meta_moves = []
 
+bs.render(board)
 while not winner:
     while True:
         if len(all_moves) >= CARDS:
@@ -124,13 +130,24 @@ while not winner:
             if bs.apply(board, move):
                 all_moves.append(move)
                 break
-    os.system('clear')
-    if os.name == 'nt':
-        os.system('cls')
+    clear()
     bs.render(board)
     winner = baz.check_victory(board, players[active]['token'])
 
     if winner:
+        if winner == "dots":
+            dot_wins = dot_wins + 1
+        if winner == "colors":
+            color_wins = color_wins + 1
+            meta_moves.append(all_moves)
+        if color_wins < 0:
+            winner = ""
+            active = 0
+            all_moves = []
+            board = bs.new()
+            clear()
+            bs.render(board)
+            continue
         print("Game over,", winner, "win!")
         break
 
@@ -143,4 +160,4 @@ while not winner:
 print("Dot wins: ", dot_wins)
 print("Color wins: ", color_wins)
 print("Color win games: ")
-print(all_moves)
+print(meta_moves)

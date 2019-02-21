@@ -34,10 +34,12 @@ class ElectronicSoul:
     def m_search(self, board, token, depth=0, max_depth=1):
         possible_moves = self.mf.find_moves(board)
         best_move = ''
-        best_score = -5000000
+        best_score = -7000000
         for m in possible_moves:
             b = self.bs.copy(board)
             self.bs.apply(b, m)
+            if self.baz.analyze(b, token) > 400000:
+                return m, 5000000
             if (depth + 1 >= max_depth):
                 h = self.baz.analyze(b, token)
                 if h > best_score:
