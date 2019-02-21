@@ -1,5 +1,6 @@
 from colorama import Fore, Back, Style
 from copy import deepcopy
+import os
 # coordinates are board[column][row]
 # bottom left block is (A,0)
 
@@ -151,8 +152,12 @@ class BoardSynth:
         if not string:
             return Back.BLACK + Fore.WHITE + '·'
         filled_in = ""
-        if string[1] in ['▷','△','▽','◁']:
-            filled_in = self.fill_in(string[1])
+        if os.name =='nt':
+            if string[1] in ['▷','△','▽','◁']:
+                filled_in = self.fill_in(string[1])
+        else:
+            if string[0].upper() == 'R' and string[1] in ['▷','△','▽','◁']:
+                filled_in = self.fill_in(string[1])
 
         bg = fg = None
 
@@ -164,7 +169,10 @@ class BoardSynth:
         if not filled_in:
             fg = Fore.BLACK + string[1]
         else:
-            fg = Fore.BLACK + Style.BRIGHT + filled_in + Style.RESET_ALL
+            if os.name == 'nt':
+                fg = Fore.BLACK + Style.BRIGHT + filled_in + Style.RESET_ALL
+            else:
+                fg = Fore.WHITE + filled_in
 
         return bg + fg
 
