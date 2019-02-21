@@ -34,9 +34,11 @@ class BoardSynth:
         sym1, sym2 = board[col1][row1], board[col2][row2]
         return ((col1, row1, sym1),(col2, row2, sym2))
 
-    def recycle(self, board, to_remove, to_apply, last_move):
+    def recycle(self, board, move, last_move):
         board_original = self.copy(board)
         try:
+            to_remove = move[:4]
+            to_apply = move[-3:]
             remove_ds = self.coord_to_dest(board, to_remove)
             apply_ds = self.dest(to_apply)
 
@@ -193,7 +195,6 @@ class BoardSynth:
             'W►': 'R◁',
             'R△': 'W▼'
         }[sym]
-
 
     def legal_card(self, card):
         col1, row1, sym1 = card[0][0], card[0][1], card[0][2]
