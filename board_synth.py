@@ -19,10 +19,10 @@ class BoardSynth:
                         board[s[0]][s[1]] = s[2]
                 else:
                     print("Illegal move: " + ' '.join(c))
-                    board = board_original
+                    board[:] = list(board_original)
                     return False
             except Exception as e:
-                board = board_original
+                board[:] = list(board_original)
                 print("Illegal move: " + ' '.join(c))
                 print(e)
                 return False
@@ -53,7 +53,7 @@ class BoardSynth:
         except Exception as e:
             print('Invalid recycle move:', e)
 
-        board = board_original
+        board[:] = list(board_original)
         print("Board reverted, illegal recycle.")
         return False
 
