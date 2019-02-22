@@ -81,7 +81,6 @@ class BoardSynth:
                 return True
             elif not board[first_col][first_row + 1] and not board[second_col][second_row + 1]:
                 return True
-        print("Not a legal card to remove.")
         return False
 
     def legal(self, board, dest):

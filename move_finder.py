@@ -47,7 +47,7 @@ class MoveFinder:
             height = int(len(col_s)/2)-1
             
             # ordering of remove_coord is guaranteed
-            if last_char == '▷' or last_char == '▶':
+            if last_char == '▷' or last_char == '►':
                 remove_coord = [self.to_char(c), height+1, self.to_char(c+1), height+1]
             elif last_char == '▽' or last_char == '▼':
                 remove_coord = [self.to_char(c), height, self.to_char(c), height+1]
