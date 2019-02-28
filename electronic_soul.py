@@ -61,6 +61,8 @@ class ElectronicSoul:
                 if h*-1 > best_score:
                     best_score = h*-1
                     best_move = m
+                    if h == -5000000:
+                       break
         return best_move, best_score
 
     def m_cycle(self, board, token, depth, max_depth, last_move):
@@ -70,7 +72,7 @@ class ElectronicSoul:
         for m in possible_moves:
             b = self.bs.copy(board)
             if not self.bs.recycle(b, m, last_move):
-                import ipdb; ipdb.set_trace()
+                continue
             if self.baz.analyze(b, token) > 400000:
                 return m, 5000000
             if (depth + 1 >= max_depth):
@@ -84,6 +86,8 @@ class ElectronicSoul:
                 if h*-1 > best_score:
                     best_score = h*-1
                     best_move = m
+                    if h == -5000000:
+                       break
         return best_move, best_score
 
 

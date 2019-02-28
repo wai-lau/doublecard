@@ -14,7 +14,7 @@ class BoardAnalyzer:
         t_board = list(zip(*board))
 
         if not "".join(t_board[0]):
-            return (0,0,0,0,0), (0,0,0,0,0)
+            return 0
 
         cols = [col for col in board if "".join(col)]
         rows = [row for row in t_board if "".join(row)]

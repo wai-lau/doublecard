@@ -23,7 +23,7 @@ def clock(func, times = 1):
        print("-{}- took{} {}μs with args type {}"
              .format(func.__name__,
                      " on average" if times != 1 else "",
-                     int((dt2-dt).microseconds)/times,
+                     ((dt2-dt).seconds*1000000 + (dt2-dt).microseconds)/times,
                      type(args)))
        return result
    return func_wrapper
