@@ -1,11 +1,12 @@
 from board_synth import BoardSynth
 from board_analyzer import BoardAnalyzer
+from minimax_soul import MinimaxSoul
 from electronic_soul import ElectronicSoul
+from naive_soul import NaiveSoul
 from move_finder import MoveFinder
 from points_cache import PointsCache
 from clock_it import clock
 import os
-
 
 # number of identical cards and maximum moves allowed in the game
 CARDS = 24
@@ -40,22 +41,23 @@ else:
 
 bs = BoardSynth()
 mf = MoveFinder(bs)
-board = bs.new()
 ach = PointsCache("analysis.pkl")
 baz = BoardAnalyzer(ach)
-naive_sl = ElectronicSoul(bs, baz, "naive_single_layer", mf)
-naive_chaos = ElectronicSoul(bs, baz, "chaos_naive", mf)
-monkey = ElectronicSoul(bs, baz, "chaos_monkey", mf)
-minimax = ElectronicSoul(bs, baz, "minimax", mf)
-chaos_minimax = ElectronicSoul(bs, baz, "chaos_minimax", mf)
+naive_sl = NaiveSoul(bs, baz, mf)
+naive_chaos = NaiveSoul(bs, baz, mf, sanity=77)
+monkey = ElectronicSoul(bs, baz, mf, sanity=100)
+minimax = MinimaxSoul(bs, baz, mf)
+chaos_minimax = MinimaxSoul(bs, baz, mf, sanity=77)
+
+board = bs.new()
 all_moves = []
 dot_wins = 0
 color_wins = 0
 meta_moves = []
 
-p1["name"] = "chaotic-minimax"
+p1["name"] = "naive-chaos"
 p1["token"] = choice
-p1["soul"] = chaos_minimax
+p1["soul"] = naive_chaos
 
 p2["name"] = "minimax"
 p2["token"] = opp_choice
