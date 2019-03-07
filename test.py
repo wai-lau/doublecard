@@ -4,20 +4,27 @@ from analysis_cache import AnalysisCache
 from move_finder import MoveFinder
 from electronic_soul import ElectronicSoul
 from clock_it import clock
+from useless_analyzer import UselessAnalyzer
 import os
 
 bs = BoardSynth()
-ach = AnalysisCache("analysis.pkl")
-baz = BoardAnalyzer(ach)
-
 board = bs.new()
 
-all_moves = [['0', '5', 'a', '1'], ['0', '5', 'a', '2'], ['0', '5', 'a', '3'], ['0', '7', 'a', '4'], ['0', '7', 'a', '5'], ['0', '7', 'a', '6'], ['0', '5', 'c', '1'], ['0', '5', 'c', '2'], ['0', '5', 'c', '3'], ['0', '7', 'c', '4'], ['0', '7', 'c', '5'], ['0', '7', 'c', '6'], ['0', '5', 'e', '1'], ['0', '5', 'e', '2'], ['0', '5', 'e', '3'], ['0', '7', 'e', '4'], ['0', '7', 'e', '5'], ['0', '7', 'e', '6'], ['0', '5', 'g', '1'], ['0', '5', 'g', '2'], ['0', '5', 'g', '3'], ['0', '7', 'g', '4'], ['0', '7', 'g', '5'], ['0', '7', 'g', '6']]
+all_moves = [
+    ['0', '3', 'a', '1'],
+    ['0', '5', 'a', '2'],
+    ['0', '8', 'c', '1'],
+    ['0', '8', 'd', '1'],
+    ['0', '3', 'e', '1'],
+    ['0', '3', 'e', '2'],
+    ['0', '1', 'e', '3'],
+    ['0', '4', 'c', '3'],
+    ['0', '4', 'd', '3']
+]
 bs.apply(board, *all_moves)
-
 bs.render(board)
-mf = MoveFinder(bs)
-es = ElectronicSoul(bs, baz, "naive_single_layer")
-recyclable = clock(mf.find_recyclable)(board, all_moves[-1])
+
+ua = UselessAnalyzer()
+print(ua.analyze(board, "dots"))
 
 import ipdb; ipdb.set_trace()

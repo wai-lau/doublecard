@@ -1,6 +1,7 @@
+from board_analyzer import BoardAnalyzer
 # Convention: Dots is position 0, Colors position 1
 
-class FetchAnalyzer:
+class FetchAnalyzer(BoardAnalyzer):
     def __init__(self, ach):
         self.ach = ach
 
