@@ -1,7 +1,8 @@
 from board_synth import BoardSynth
 from board_analyzer import BoardAnalyzer
-from analysis_cache import AnalysisCache
 from electronic_soul import ElectronicSoul
+from move_finder import MoveFinder
+from points_cache import PointsCache
 from clock_it import clock
 import os
 
@@ -28,10 +29,9 @@ def get_choice(choices):
             "Welcome to Double Card!\n"
             "Which of [%s] would you like to play as? " % ", ".join(choices))
     return choice
+choice = "colors"
 # choice = get_choice(["dots", "colors"])
 opp_choice = ""
-
-choice = "colors"
 
 if choice == "dots":
     opp_choice = "colors"
@@ -39,15 +39,19 @@ else:
     opp_choice = "dots"
 
 bs = BoardSynth()
+mf = MoveFinder(bs)
 board = bs.new()
-ach = AnalysisCache("analysis.pkl")
+ach = PointsCache("analysis.pkl")
 baz = BoardAnalyzer(ach)
-naive_sl = ElectronicSoul(bs, baz, "naive_single_layer")
-naive_chaos = ElectronicSoul(bs, baz, "chaos_naive")
-monkey = ElectronicSoul(bs, baz, "chaos_monkey")
-minimax = ElectronicSoul(bs, baz, "minimax")
-chaos_minimax = ElectronicSoul(bs, baz, "chaos_minimax")
+naive_sl = ElectronicSoul(bs, baz, "naive_single_layer", mf)
+naive_chaos = ElectronicSoul(bs, baz, "chaos_naive", mf)
+monkey = ElectronicSoul(bs, baz, "chaos_monkey", mf)
+minimax = ElectronicSoul(bs, baz, "minimax", mf)
+chaos_minimax = ElectronicSoul(bs, baz, "chaos_minimax", mf)
 all_moves = []
+dot_wins = 0
+color_wins = 0
+meta_moves = []
 
 p1["name"] = "chaotic-minimax"
 p1["token"] = choice
@@ -59,33 +63,33 @@ p2["soul"] = minimax
 
 # the following will fill up the board, helping with the recycle implementation
 # all_moves = [['0', '1', 'a', '1'], ['0', '6', 'b', '2'], ['0', '6', 'c', '1'], ['0', '3', 'd', '1'], ['0', '8', 'c', '3'], ['0', '2', 'A', '2'], ['0', '1', 'F', '1'], ['0', '8', 'H', '1'], ['0', '3', 'E', '2'], ['0', '5', 'E', '3'], ['0', '8', 'D', '2'], ['0', '1', 'D', '4'], ['0', '8', 'H', '3'], ['0', '8', 'H', '5'], ['0', '8', 'H', '7'], ['0', '8', 'H', '9'], ['0', '8', 'H', '11'], ['0', '8', 'D', '5'], ['0', '8', 'D', '7'], ['0', '8', 'D', '9'], ['0', '8', 'D', '11'], ['0', '4', 'A', '4'], ['0', '4', 'A', '6']]
-all_moves = [['0', '5', 'a', '1'], ['0', '5', 'a', '2'], ['0', '5', 'a', '3'], ['0', '7', 'a', '4'], ['0', '8', 'a', '5'], ['0', '8', 'b', '5'], ['0', '5', 'c', '1'], ['0', '5', 'c', '2'], ['0', '5', 'c', '3'], ['0', '7', 'c', '4'], ['0', '8', 'c', '5'], ['0', '8', 'd', '5'], ['0', '5', 'e', '1'], ['0', '5', 'e', '2'], ['0', '5', 'e', '3'], ['0', '7', 'e', '4'], ['0', '8', 'e', '5'], ['0', '8', 'f', '5'], ['0', '5', 'g', '1'], ['0', '5', 'g', '2'], ['0', '5', 'g', '3'], ['0', '7', 'g', '4'], ['0', '8', 'g', '5'], ['0', '8', 'h', '5']]
-all_moves = [
-    ['0', '1', 'a', '1'],
-    ['0', '1', 'a', '2'],
-    ['0', '3', 'a', '3'],
-    ['0', '3', 'a', '4'],
-    ['0', '3', 'a', '5'],
-    ['0', '1', 'a', '6'],
-    ['0', '1', 'a', '7'],
-    ['0', '3', 'a', '8'],
-    ['0', '1', 'a', '9'],
-    ['0', '3', 'a', '10'],
-    ['0', '3', 'a', '11'],
-    ['0', '3', 'a', '12'],
-    ['0', '3', 'g', '1'],
-    ['0', '3', 'g', '2'],
-    ['0', '1', 'g', '3'],
-    ['0', '1', 'g', '4'],
-    ['0', '1', 'g', '5'],
-    ['0', '3', 'g', '6'],
-    ['0', '3', 'g', '7'],
-    ['0', '1', 'g', '8'],
-    ['0', '3', 'g', '9'],
-    ['0', '1', 'g', '10'],
-    ['0', '3', 'g', '11'],
-]
-bs.apply(board, *all_moves)
+# all_moves = [['0', '5', 'a', '1'], ['0', '5', 'a', '2'], ['0', '5', 'a', '3'], ['0', '7', 'a', '4'], ['0', '8', 'a', '5'], ['0', '8', 'b', '5'], ['0', '5', 'c', '1'], ['0', '5', 'c', '2'], ['0', '5', 'c', '3'], ['0', '7', 'c', '4'], ['0', '8', 'c', '5'], ['0', '8', 'd', '5'], ['0', '5', 'e', '1'], ['0', '5', 'e', '2'], ['0', '5', 'e', '3'], ['0', '7', 'e', '4'], ['0', '8', 'e', '5'], ['0', '8', 'f', '5'], ['0', '5', 'g', '1'], ['0', '5', 'g', '2'], ['0', '5', 'g', '3'], ['0', '7', 'g', '4'], ['0', '8', 'g', '5'], ['0', '8', 'h', '5']]
+# all_moves = [
+#     ['0', '1', 'a', '1'],
+#     ['0', '1', 'a', '2'],
+#     ['0', '3', 'a', '3'],
+#     ['0', '3', 'a', '4'],
+#     ['0', '3', 'a', '5'],
+#     ['0', '1', 'a', '6'],
+#     ['0', '1', 'a', '7'],
+#     ['0', '3', 'a', '8'],
+#     ['0', '1', 'a', '9'],
+#     ['0', '3', 'a', '10'],
+#     ['0', '3', 'a', '11'],
+#     ['0', '3', 'a', '12'],
+#     ['0', '3', 'g', '1'],
+#     ['0', '3', 'g', '2'],
+#     ['0', '1', 'g', '3'],
+#     ['0', '1', 'g', '4'],
+#     ['0', '1', 'g', '5'],
+#     ['0', '3', 'g', '6'],
+#     ['0', '3', 'g', '7'],
+#     ['0', '1', 'g', '8'],
+#     ['0', '3', 'g', '9'],
+#     ['0', '1', 'g', '10'],
+#     ['0', '3', 'g', '11'],
+# ]
+# bs.apply(board, *all_moves)
 
 def get_move(player, moves_played_count=None, last_move=None):
     move = ""
@@ -101,23 +105,13 @@ def get_move(player, moves_played_count=None, last_move=None):
         input("Press Enter.")
     return move
 
-os.system('clear')
-if os.name == 'nt':
-    os.system('cls')
-# the following will fill up the board, helping with the recycle implementation
-# all_moves = [['0', '1', 'a', '1'], ['0', '6', 'b', '2'], ['0', '6', 'c', '1'], ['0', '3', 'd', '1'], ['0', '8', 'c', '3'], ['0', '2', 'A', '2'], ['0', '1', 'F', '1'], ['0', '8', 'H', '1'], ['0', '3', 'E', '2'], ['0', '5', 'E', '3'], ['0', '8', 'D', '2'], ['0', '1', 'D', '4'], ['0', '8', 'H', '3'], ['0', '8', 'H', '5'], ['0', '8', 'H', '7'], ['0', '8', 'H', '9'], ['0', '8', 'H', '11'], ['0', '8', 'D', '5'], ['0', '8', 'D', '7'], ['0', '8', 'D', '9'], ['0', '8', 'D', '11'], ['0', '4', 'A', '4'], ['0', '4', 'A', '6']]
-# bs.apply(board, *all_moves)
-
 def clear():
     if os.name == 'nt':
         os.system("cls")
     else:
         os.system("clear")
 
-dot_wins = 0
-color_wins = 0
-meta_moves = []
-
+clear()
 bs.render(board)
 while not winner:
     while True:

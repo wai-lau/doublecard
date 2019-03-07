@@ -1,10 +1,9 @@
 import os
 from random import shuffle, random
-from move_finder import MoveFinder
 
 class ElectronicSoul:
-    def __init__(self, bs, baz, method):
-        self.mf = MoveFinder(bs)
+    def __init__(self, bs, baz, method, mf):
+        self.mf = mf
         self.bs = bs
         self.baz = baz
         if method == "naive_single_layer":
@@ -140,5 +139,4 @@ class ElectronicSoul:
             print(func.__name__, "plays")
             return func(board, *args)
         return func_wrapper
-
 
