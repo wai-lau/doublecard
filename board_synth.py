@@ -19,10 +19,10 @@ class BoardSynth:
                         board[s[0]][s[1]] = s[2]
                 else:
                     print("Illegal move: " + ' '.join(c))
-                    board = board_original
+                    board[:] = list(board_original)
                     return False
             except Exception as e:
-                board = board_original
+                board[:] = list(board_original)
                 print("Illegal move: " + ' '.join(c))
                 print(e)
                 return False
@@ -34,36 +34,37 @@ class BoardSynth:
         sym1, sym2 = board[col1][row1], board[col2][row2]
         return ((col1, row1, sym1),(col2, row2, sym2))
 
-    def recycle(self, board, to_remove, to_apply, last_move):
+    def recycle(self, board, move, last_move):
         board_original = self.copy(board)
         try:
+            to_remove = move[:4]
+            to_apply = move[-3:]
             remove_ds = self.coord_to_dest(board, to_remove)
             apply_ds = self.dest(to_apply)
-            last_ds = self.dest(last_move[-3:])
 
-            if remove_ds == last_ds or tuple(reversed(remove_ds)) == last_ds:
-                print("Cannot recycle recently played move: " + ' '.join(to_remove))
-                return False
             if remove_ds == apply_ds or tuple(reversed(remove_ds)) == apply_ds:
                 print("Cannot place card in the same place!: " + ' '.join(to_remove))
                 return False
 
-            if remove_ds and self.legal_remove(board, remove_ds):
-                for s in remove_ds:
-                    board[s[0]][s[1]] = ''
-            else:
-                print("Board reverted, illegal remove")
-                board = board_original
-                return False
-
-            if apply_ds and self.apply(board, to_apply):
+            if apply_ds and self.remove(board, remove_ds, last_move)\
+                        and self.apply(board, to_apply):
                 return True
 
         except Exception as e:
             print('Invalid recycle move:', e)
 
-        print("Board reverted, illegal recycle")
-        board = board_original
+        board[:] = list(board_original)
+        print("Board reverted, illegal recycle.")
+        return False
+
+    def remove(self, board, remove_ds, last_move):
+        last_ds = self.dest(last_move[-3:])
+        if remove_ds == last_ds or tuple(reversed(remove_ds)) == last_ds:
+            return False
+        if remove_ds and self.legal_remove(board, remove_ds):
+            for s in remove_ds:
+                board[s[0]][s[1]] = ''
+            return True
         return False
 
     def legal_remove(self, board, dest):
@@ -80,7 +81,6 @@ class BoardSynth:
                 return True
             elif not board[first_col][first_row + 1] and not board[second_col][second_row + 1]:
                 return True
-        print("Not a legal card to remove.")
         return False
 
     def legal(self, board, dest):
@@ -194,7 +194,6 @@ class BoardSynth:
             'W►': 'R◁',
             'R△': 'W▼'
         }[sym]
-
 
     def legal_card(self, card):
         col1, row1, sym1 = card[0][0], card[0][1], card[0][2]

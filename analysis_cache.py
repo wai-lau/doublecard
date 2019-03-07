@@ -1,9 +1,9 @@
 import shelve
 
 class AnalysisCache:
-    def __init__(self, rebuild=False):
+    def __init__(self, filename, rebuild=False):
         self.cache = {}
-        with shelve.open("analysis.pkl") as shelf:
+        with shelve.open(filename) as shelf:
             if rebuild or not shelf:
                 self.generate_cache(level=12)
                 shelf['cache'] = self.cache
@@ -35,17 +35,29 @@ class AnalysisCache:
 
     def check_line_tern(self, line):
         groups = len(line)-3
-        points = [0,0,0,0,0]
+        in_a_rows = [0,0,0,0,0]
 
         if groups <= 0:
-            return points
+            return in_a_rows
 
         for s in range(groups):
             group = [l for l in line[s:s+4] if l!="0"]
 
             if "1" not in group or "2" not in group:
-                points[len(group)] = points[len(group)]+1
+                in_a_rows[len(group)] = in_a_rows[len(group)]+1
 
-        return points
+        return self.dual_analysis(in_a_rows)
 
+    def dual_analysis(self, in_a_rows):
+        # heuristic should be [0] - [1] (yours - theirs)
+        ours = 0
+        # since we take a subset, in_a_rows[0] is the number of doubles
+        # using a multiple of 20 if it outclasses in all cases
+        for i, n in enumerate(in_a_rows[2:]):
+            ours = ours + {0:2, 1:12, 2:600000}[i]*n
+        theirs = 0
+        # enemy triples are worth as much as a loss, since they will play that move
+        for i, n in enumerate(in_a_rows[2:]):
+            theirs = theirs + {0:12, 1:1000, 2:20000}[i]*n
+        return (ours, theirs)
 
