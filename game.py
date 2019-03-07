@@ -1,5 +1,5 @@
 from board_synth import BoardSynth
-from board_analyzer import BoardAnalyzer
+from fetch_analyzer import FetchAnalyzer
 from minimax_soul import MinimaxSoul
 from electronic_soul import ElectronicSoul
 from naive_soul import NaiveSoul
@@ -42,12 +42,17 @@ else:
 bs = BoardSynth()
 mf = MoveFinder(bs)
 ach = PointsCache("analysis.pkl")
-baz = BoardAnalyzer(ach)
-naive_sl = NaiveSoul(bs, baz, mf)
-naive_chaos = NaiveSoul(bs, baz, mf, sanity=77)
-monkey = ElectronicSoul(bs, baz, mf, sanity=100)
-minimax = MinimaxSoul(bs, baz, mf)
-chaos_minimax = MinimaxSoul(bs, baz, mf, sanity=77)
+ach2 = PointsCache("aggressive_analysis.pkl",
+                   our_points={0:6, 1:14, 2:600000},
+                   their_points={0:12, 1:1000, 2:20000})
+faz = FetchAnalyzer(ach)
+faz2 = FetchAnalyzer(ach2)
+naive_sl = NaiveSoul(bs, faz, mf)
+naive_chaos = NaiveSoul(bs, faz, mf, sanity=77)
+monkey = ElectronicSoul(bs, faz, mf, sanity=100)
+minimax = MinimaxSoul(bs, faz, mf)
+aggressive_minimax = MinimaxSoul(bs, faz2, mf)
+minimax_chaos = MinimaxSoul(bs, faz, mf, sanity=77)
 
 board = bs.new()
 all_moves = []
@@ -55,43 +60,43 @@ dot_wins = 0
 color_wins = 0
 meta_moves = []
 
-p1["name"] = "naive-chaos"
+p1["name"] = "minimax_chaos"
 p1["token"] = choice
-p1["soul"] = naive_chaos
+p1["soul"] = minimax_chaos
 
-p2["name"] = "minimax"
+p2["name"] = "aggressive_minimax"
 p2["token"] = opp_choice
-p2["soul"] = minimax
+p2["soul"] = aggressive_minimax
 
 # the following will fill up the board, helping with the recycle implementation
 # all_moves = [['0', '1', 'a', '1'], ['0', '6', 'b', '2'], ['0', '6', 'c', '1'], ['0', '3', 'd', '1'], ['0', '8', 'c', '3'], ['0', '2', 'A', '2'], ['0', '1', 'F', '1'], ['0', '8', 'H', '1'], ['0', '3', 'E', '2'], ['0', '5', 'E', '3'], ['0', '8', 'D', '2'], ['0', '1', 'D', '4'], ['0', '8', 'H', '3'], ['0', '8', 'H', '5'], ['0', '8', 'H', '7'], ['0', '8', 'H', '9'], ['0', '8', 'H', '11'], ['0', '8', 'D', '5'], ['0', '8', 'D', '7'], ['0', '8', 'D', '9'], ['0', '8', 'D', '11'], ['0', '4', 'A', '4'], ['0', '4', 'A', '6']]
 # all_moves = [['0', '5', 'a', '1'], ['0', '5', 'a', '2'], ['0', '5', 'a', '3'], ['0', '7', 'a', '4'], ['0', '8', 'a', '5'], ['0', '8', 'b', '5'], ['0', '5', 'c', '1'], ['0', '5', 'c', '2'], ['0', '5', 'c', '3'], ['0', '7', 'c', '4'], ['0', '8', 'c', '5'], ['0', '8', 'd', '5'], ['0', '5', 'e', '1'], ['0', '5', 'e', '2'], ['0', '5', 'e', '3'], ['0', '7', 'e', '4'], ['0', '8', 'e', '5'], ['0', '8', 'f', '5'], ['0', '5', 'g', '1'], ['0', '5', 'g', '2'], ['0', '5', 'g', '3'], ['0', '7', 'g', '4'], ['0', '8', 'g', '5'], ['0', '8', 'h', '5']]
-# all_moves = [
-#     ['0', '1', 'a', '1'],
-#     ['0', '1', 'a', '2'],
-#     ['0', '3', 'a', '3'],
-#     ['0', '3', 'a', '4'],
-#     ['0', '3', 'a', '5'],
-#     ['0', '1', 'a', '6'],
-#     ['0', '1', 'a', '7'],
-#     ['0', '3', 'a', '8'],
-#     ['0', '1', 'a', '9'],
-#     ['0', '3', 'a', '10'],
-#     ['0', '3', 'a', '11'],
-#     ['0', '3', 'a', '12'],
-#     ['0', '3', 'g', '1'],
-#     ['0', '3', 'g', '2'],
-#     ['0', '1', 'g', '3'],
-#     ['0', '1', 'g', '4'],
-#     ['0', '1', 'g', '5'],
-#     ['0', '3', 'g', '6'],
-#     ['0', '3', 'g', '7'],
-#     ['0', '1', 'g', '8'],
-#     ['0', '3', 'g', '9'],
-#     ['0', '1', 'g', '10'],
-#     ['0', '3', 'g', '11'],
-# ]
-# bs.apply(board, *all_moves)
+all_moves = [
+    ['0', '1', 'a', '1'],
+    ['0', '1', 'a', '2'],
+    ['0', '3', 'a', '3'],
+    ['0', '3', 'a', '4'],
+    ['0', '3', 'a', '5'],
+    ['0', '1', 'a', '6'],
+    ['0', '1', 'a', '7'],
+    ['0', '3', 'a', '8'],
+    ['0', '1', 'a', '9'],
+    ['0', '3', 'a', '10'],
+    ['0', '3', 'a', '11'],
+    ['0', '3', 'a', '12'],
+    ['0', '3', 'g', '1'],
+    ['0', '3', 'g', '2'],
+    ['0', '1', 'g', '3'],
+    ['0', '1', 'g', '4'],
+    ['0', '1', 'g', '5'],
+    ['0', '3', 'g', '6'],
+    ['0', '3', 'g', '7'],
+    ['0', '1', 'g', '8'],
+    ['0', '3', 'g', '9'],
+    ['0', '1', 'g', '10'],
+    ['0', '3', 'g', '11'],
+]
+bs.apply(board, *all_moves)
 
 def get_move(player, moves_played_count=None, last_move=None):
     move = ""
@@ -129,7 +134,7 @@ while not winner:
                 break
     clear()
     bs.render(board)
-    winner = baz.check_victory(board, players[active]['token'])
+    winner = faz.check_victory(board, players[active]['token'])
 
     if winner:
         if winner == "dots":
