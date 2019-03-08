@@ -2,6 +2,7 @@ from electronic_soul import ElectronicSoul
 
 class UselessSoul(ElectronicSoul):
     def move(self, board, token, moves_played_count, *args):
+        self.create_file('output.txt')
         return self.m_search(board, token, 0, 2, moves_played_count)[0]
 
     def recycle(self, board, token, last_move, *args):
@@ -64,6 +65,9 @@ class UselessSoul(ElectronicSoul):
 
     def flipside(self, token):
         return "dots" if token == "colors" else "colors"
+
+    def create_file(self, filename):
+        open(filename,'w')
 
     def append_to_file(self, filename, data):
         file = None
