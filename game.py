@@ -24,12 +24,11 @@ players = [p1, p2]
 active = 0
 winner = False
 
-
 # to enable the generation of a trace if required by the game player
 def require_trace():
     if click.confirm('Would you like to generate a trace of the minimax?', default=True):
-        # TODO: call function from useless soul
-        print('Generate the trace within USELESS_SOUL')
+        return True
+    return False
 
 
 # for manual play, prompt the user to choose between dots or colors
@@ -54,7 +53,7 @@ else:
     opp_choice = "dots"
 
 # prompt to inquire if trace is needed
-require_trace()
+generate_trace = require_trace()
 
 
 bs = BoardSynth()
@@ -72,7 +71,7 @@ minimax = MinimaxSoul(bs, faz, mf)
 aggressive_minimax = MinimaxSoul(bs, faz2, mf)
 minimax_chaos = MinimaxSoul(bs, faz, mf, sanity=77)
 ua = UselessAnalyzer()
-useless = UselessSoul(bs, ua, mf)
+useless = UselessSoul(bs, ua, mf, True) if generate_trace else UselessSoul(bs, ua, mf, False)
 
 board = bs.new()
 all_moves = []
