@@ -29,6 +29,13 @@ class UselessSoul(ElectronicSoul):
         if self.generate_trace:
             best_move, best_score = self.m_cycle(board, token, 0, 2, last_move)
             self.append_to_file(DEFAULT_OUTPUT_FILE, '\n' + str(best_score))
+            if self.level_2_node_values:
+                self.append_to_file(DEFAULT_OUTPUT_FILE, "")
+                for node_value in self.level_2_node_values:
+                    self.append_to_file(DEFAULT_OUTPUT_FILE, node_value)
+                self.append_to_file(DEFAULT_OUTPUT_FILE, "")
+            # Clear the list of node-level 2 values for the next search 
+            self.level_2_node_values.clear()
             return best_move
         return self.m_cycle(board, token, 0, 2, last_move)[0]
 
