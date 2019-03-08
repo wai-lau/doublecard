@@ -4,6 +4,7 @@ DEFAULT_OUTPUT_FILE = 'tracemm.txt'
 class UselessSoul(ElectronicSoul):
     def __init__(self, bs, baz, mf, generate_trace, sanity=100):
         super().__init__(bs, baz, mf, sanity)
+        self.max_depth_heuristic_count = 0
         self.generate_trace = generate_trace
         if generate_trace:
             self.create_file(DEFAULT_OUTPUT_FILE)
@@ -11,8 +12,8 @@ class UselessSoul(ElectronicSoul):
     def move(self, board, token, moves_played_count, *args):
         if self.generate_trace:
             best_move, best_score = self.m_search(board, token, 0, 2, moves_played_count)
-            self.append_to_file(DEFAULT_OUTPUT_FILE, '\n' + str(best_score))
-            # jankily somehow add the list of node 2 heuristic scores here
+            self.append_to_file(DEFAULT_OUTPUT_FILE, str(self.max_depth_heuristic_count))
+            self.append_to_file(DEFAULT_OUTPUT_FILE, str(best_score))
             return best_move
         return self.m_search(board, token, 0, 2, moves_played_count)[0]
 
@@ -38,7 +39,7 @@ class UselessSoul(ElectronicSoul):
                     best_score = h
                     best_move = m
                 # Counting the number of times e(n) has been applied to max depth node
-                self.count_in_file(DEFAULT_OUTPUT_FILE)
+                self.max_depth_heuristic_count += 1
             else:
                 if (moves_played_count >= 23):
                     their_best, h = self.m_cycle(b, self.flipside(token),
@@ -67,6 +68,7 @@ class UselessSoul(ElectronicSoul):
                 if h > best_score:
                     best_score = h
                     best_move = m
+                self.max_depth_heuristic_count += 1
             else:
                 their_best, h = self.m_cycle(b, self.flipside(token),
                                              depth+1, max_depth, m)
@@ -88,10 +90,4 @@ class UselessSoul(ElectronicSoul):
         except:
             # if the file doesn't exist, create it
             file = open(filename,'w')
-        file.write(str(data))
-
-    def count_in_file(self, filename):
-        with open(filename,'r+') as f:
-            value = f.readline().strip() or 0
-            f.seek(0)
-            f.write(str(int(value) + 1))
+        file.write(str(data) + '\n')
