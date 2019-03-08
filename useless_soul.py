@@ -87,6 +87,10 @@ class UselessSoul(ElectronicSoul):
                 if h*-1 > best_score:
                     best_score = h*-1
                     best_move = m
+
+                # Filling up the list of e(n) values coming up from level 2
+                if max_depth == 2:
+                    self.level_2_node_values.append(str(best_score))
         return best_move, best_score
 
     def flipside(self, token):
