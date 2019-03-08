@@ -8,6 +8,7 @@ from naive_soul import NaiveSoul
 from move_finder import MoveFinder
 from points_cache import PointsCache
 from clock_it import clock
+import click
 import os
 
 # number of identical cards and maximum moves allowed in the game
@@ -23,6 +24,14 @@ players = [p1, p2]
 active = 0
 winner = False
 
+
+# to enable the generation of a trace if required by the game player
+def require_trace():
+    if click.confirm('Would you like to generate a trace of the minimax?', default=True):
+        # TODO: call function from useless soul
+        print('Generate the trace within USELESS_SOUL')
+
+
 # for manual play, prompt the user to choose between dots or colors
 # assign other choice to the electronic soul
 def get_choice(choices):
@@ -32,6 +41,9 @@ def get_choice(choices):
             "Welcome to Double Card!\n"
             "Which of [%s] would you like to play as? " % ", ".join(choices))
     return choice
+
+
+# select choices for players
 choice = "colors"
 # choice = get_choice(["dots", "colors"])
 opp_choice = ""
@@ -41,12 +53,16 @@ if choice == "dots":
 else:
     opp_choice = "dots"
 
+# prompt to inquire if trace is needed
+require_trace()
+
+
 bs = BoardSynth()
 mf = MoveFinder(bs)
 ach = PointsCache("analysis.pkl")
 ach2 = PointsCache("aggressive_analysis.pkl",
-                   our_points={0:6, 1:14, 2:600000},
-                   their_points={0:12, 1:1000, 2:20000})
+                   our_points={0: 6, 1: 14, 2: 600000},
+                   their_points={0: 12, 1: 1000, 2: 20000})
 faz = FetchAnalyzer(ach)
 faz2 = FetchAnalyzer(ach2)
 naive_sl = NaiveSoul(bs, faz, mf)
@@ -102,6 +118,7 @@ p2["soul"] = aggressive_minimax
 # ]
 # bs.apply(board, *all_moves)
 
+
 def get_move(player, moves_played_count=None, last_move=None):
     move = ""
     if player["soul"] == "organic":
@@ -110,17 +127,20 @@ def get_move(player, moves_played_count=None, last_move=None):
         # to allow users to enter input containing spaces
         move = move.split(' ')
     else:
-        move = clock(player["soul"].get_move)(board, player["token"], last_move, moves_played_count)
+        move = clock(player["soul"].get_move)(
+            board, player["token"], last_move, moves_played_count)
         print("{}: {}, {}'s move: {}"
               .format(len(all_moves)+1, player["token"], player["name"], move))
         input("Press Enter.")
     return move
+
 
 def clear():
     if os.name == 'nt':
         os.system("cls")
     else:
         os.system("clear")
+
 
 clear()
 bs.render(board)
