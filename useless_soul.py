@@ -9,16 +9,24 @@ class UselessSoul(ElectronicSoul):
             self.create_file(DEFAULT_OUTPUT_FILE)
 
     def move(self, board, token, moves_played_count, *args):
-        return self.m_search(board, token, 0, 3, moves_played_count)[0]
+        if self.generate_trace:
+            best_move, best_score = self.m_search(board, token, 0, 2, moves_played_count)
+            self.append_to_file(DEFAULT_OUTPUT_FILE, '\n' + str(best_score))
+            # jankily somehow add the list of node 2 heuristic scores here
+            return best_move
+        return self.m_search(board, token, 0, 2, moves_played_count)[0]
 
     def recycle(self, board, token, last_move, *args):
-        return self.m_cycle(board, token, 0, 3, last_move)[0]
+        if self.generate_trace:
+            best_move, best_score = self.m_cycle(board, token, 0, 2, last_move)
+            self.append_to_file(DEFAULT_OUTPUT_FILE, '\n' + str(best_score))
+            return best_move
+        return self.m_cycle(board, token, 0, 2, last_move)[0]
 
     def m_search(self, board, token, depth, max_depth, moves_played_count):
         possible_moves = self.mf.find_moves(board)
         best_move = ''
         best_score = -7000000
-        third_node_count = 0
         for m in possible_moves:
             b = self.bs.copy(board)
             self.bs.apply(b, m)
@@ -29,8 +37,8 @@ class UselessSoul(ElectronicSoul):
                 if h > best_score:
                     best_score = h
                     best_move = m
+                # Counting the number of times e(n) has been applied to max depth node
                 self.count_in_file(DEFAULT_OUTPUT_FILE)
-                #print('the depth is ' + str(depth))
             else:
                 if (moves_played_count >= 23):
                     their_best, h = self.m_cycle(b, self.flipside(token),
@@ -42,8 +50,6 @@ class UselessSoul(ElectronicSoul):
                 if h*-1 > best_score:
                     best_score = h*-1
                     best_move = m
-        #if depth == 2:
-        #   self.append_to_file(DEFAULT_OUTPUT_FILE, str(best_score) + '\n')
         return best_move, best_score
 
     def m_cycle(self, board, token, depth, max_depth, last_move):
@@ -73,7 +79,7 @@ class UselessSoul(ElectronicSoul):
         return "dots" if token == "colors" else "colors"
 
     def create_file(self, filename):
-        open(filename,'w')
+        open(filename,'w').close()
 
     def append_to_file(self, filename, data):
         file = None
@@ -82,7 +88,7 @@ class UselessSoul(ElectronicSoul):
         except:
             # if the file doesn't exist, create it
             file = open(filename,'w')
-        file.write(data)
+        file.write(str(data))
 
     def count_in_file(self, filename):
         with open(filename,'r+') as f:
