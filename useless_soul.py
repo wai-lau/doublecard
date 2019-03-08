@@ -2,7 +2,7 @@ from electronic_soul import ElectronicSoul
 
 DEFAULT_OUTPUT_FILE = 'tracemm.txt'
 class UselessSoul(ElectronicSoul):
-    def __init__(self, bs, baz, mf, generate_trace, sanity=100):
+    def __init__(self, bs, baz, mf, generate_trace=False, sanity=100):
         super().__init__(bs, baz, mf, sanity)
         self.max_depth_heuristic_count = 0
         self.level_2_node_values = []
