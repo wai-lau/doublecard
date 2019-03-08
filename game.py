@@ -18,7 +18,7 @@ MAX_MOVES = 60
 p1 = {}
 p2 = {}
 
-players = [p1, p2]
+players = []
 
 # first player (1 or 0)
 active = 0
@@ -29,6 +29,15 @@ def require_trace():
     if click.confirm('Would you like to generate a trace of the minimax?', default=True):
         return True
     return False
+
+def ai_player_number():
+    player_num = ''
+    player_nums = ['1','2']
+    while player_num not in player_nums:
+        player_num = input(
+            "Should AI be player 1 or 2? [1/2] ")
+    return player_num
+
 
 
 # for manual play, prompt the user to choose between dots or colors
@@ -41,10 +50,10 @@ def get_choice(choices):
             "Which of [%s] would you like to play as? " % ", ".join(choices))
     return choice
 
-
+ai_player_order = ai_player_number()
 # select choices for players
 choice = "colors"
-# choice = get_choice(["dots", "colors"])
+choice = get_choice(["dots", "colors"])
 opp_choice = ""
 
 if choice == "dots":
@@ -79,13 +88,20 @@ dot_wins = 0
 color_wins = 0
 meta_moves = []
 
-p1["name"] = "useless"
-p1["token"] = choice
-p1["soul"] = useless
+ai = {}
+ai["name"] = "useless"
+ai["token"] = choice
+ai["soul"] = useless
 
-p2["name"] = "aggressive_minimax"
-p2["token"] = opp_choice
-p2["soul"] = aggressive_minimax
+other = {}
+other["name"] = "aggressive_minimax"
+other["token"] = opp_choice
+other["soul"] = aggressive_minimax
+
+if ai_player_order == '1':
+    players = [ai, other]
+else:
+    players = [other, ai]
 
 # the following will fill up the board, helping with the recycle implementation
 # all_moves = [['0', '1', 'a', '1'], ['0', '6', 'b', '2'], ['0', '6', 'c', '1'], ['0', '3', 'd', '1'], ['0', '8', 'c', '3'], ['0', '2', 'A', '2'], ['0', '1', 'F', '1'], ['0', '8', 'H', '1'], ['0', '3', 'E', '2'], ['0', '5', 'E', '3'], ['0', '8', 'D', '2'], ['0', '1', 'D', '4'], ['0', '8', 'H', '3'], ['0', '8', 'H', '5'], ['0', '8', 'H', '7'], ['0', '8', 'H', '9'], ['0', '8', 'H', '11'], ['0', '8', 'D', '5'], ['0', '8', 'D', '7'], ['0', '8', 'D', '9'], ['0', '8', 'D', '11'], ['0', '4', 'A', '4'], ['0', '4', 'A', '6']]
