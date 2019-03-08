@@ -44,8 +44,10 @@ class MinimaxSoul(ElectronicSoul):
         for m in possible_moves:
             b = self.bs.copy(board)
             h = self.baz.analyze(b, token)
+            
             if h > 400000:
                 return m, 5000000
+
             if (depth + 1 >= max_depth):
                 if h > best_score:
                     best_score = h

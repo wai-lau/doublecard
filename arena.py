@@ -31,7 +31,7 @@ best_of = 30
 
 ###################################################################
 gatekeepers = [
-#    NaiveSoul,
+    NaiveSoul,
     MinimaxSoul
 ]
 ###################################################################
@@ -49,7 +49,7 @@ p2["soul"] = challenger
 players = [p1, p2]
 
 for g in gatekeepers:
-    for n, az in enumerate([faz2]):
+    for n, az in enumerate([faz, faz2]):
         dot_wins = 0
         color_wins = 0
         winner = False

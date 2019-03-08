@@ -38,8 +38,6 @@ def ai_player_number():
             "Should AI be player 1 or 2? [1/2] ")
     return player_num
 
-
-
 # for manual play, prompt the user to choose between dots or colors
 # assign other choice to the electronic soul
 def get_choice(choices):
@@ -64,7 +62,6 @@ else:
 # prompt to inquire if trace is needed
 generate_trace = require_trace()
 
-
 bs = BoardSynth()
 mf = MoveFinder(bs)
 ach = PointsCache("analysis.pkl")
@@ -73,13 +70,14 @@ ach2 = PointsCache("aggressive_analysis.pkl",
                    their_points={0: 12, 1: 1000, 2: 20000})
 faz = FetchAnalyzer(ach)
 faz2 = FetchAnalyzer(ach2)
+ua = UselessAnalyzer()
+game_analyzer = ua
 naive_sl = NaiveSoul(bs, faz, mf)
 naive_chaos = NaiveSoul(bs, faz, mf, sanity=77)
 monkey = ElectronicSoul(bs, faz, mf, sanity=100)
 minimax = MinimaxSoul(bs, faz, mf)
 aggressive_minimax = MinimaxSoul(bs, faz2, mf)
 minimax_chaos = MinimaxSoul(bs, faz, mf, sanity=77)
-ua = UselessAnalyzer()
 useless = UselessSoul(bs, ua, mf, True) if generate_trace else UselessSoul(bs, ua, mf, False)
 
 board = bs.new()
@@ -90,13 +88,13 @@ meta_moves = []
 
 ai = {}
 ai["name"] = "useless"
-ai["token"] = choice
+ai["token"] = opp_choice
 ai["soul"] = useless
 
 other = {}
-other["name"] = "aggressive_minimax"
-other["token"] = opp_choice
-other["soul"] = aggressive_minimax
+other["name"] = "human"
+other["token"] = choice
+other["soul"] = "organic"
 
 if ai_player_order == '1':
     players = [ai, other]
@@ -156,7 +154,6 @@ def clear():
     else:
         os.system("clear")
 
-
 clear()
 bs.render(board)
 while not winner:
@@ -173,6 +170,10 @@ while not winner:
                 break
     clear()
     bs.render(board)
+    print(players[active]["token"],"analysis:",
+          game_analyzer.analyze(board, players[active]["token"]))
+    print(players[(active + 1) % 2]["token"],"analysis:",
+          game_analyzer.analyze(board, players[(active + 1) % 2]["token"]))
     winner = faz.check_victory(board, players[active]['token'])
 
     if winner:
