@@ -1,10 +1,11 @@
 from board_synth import BoardSynth
 from fetch_analyzer import FetchAnalyzer
 from minimax_soul import MinimaxSoul
-from electronic_soul import ElectronicSoul
 from naive_soul import NaiveSoul
 from move_finder import MoveFinder
 from points_cache import PointsCache
+from alpha_beta_soul import AlphaBetaSoul
+from alpha_lite_soul import AlphaLiteSoul
 import os
 
 CARDS = 24
@@ -21,18 +22,16 @@ ach2 = PointsCache("aggressive_analysis.pkl",
                    their_points={0:12, 1:1000, 2:20000})
 faz2 = FetchAnalyzer(ach2)
 
-aggressive_minimax = MinimaxSoul(bs, faz2, mf)
-naive = NaiveSoul(bs, faz, mf)
-
 ###################################################################
-challenger = naive
+challenger = AlphaLiteSoul(bs, faz, mf)
 best_of = 30
 ###################################################################
 
 ###################################################################
 gatekeepers = [
     NaiveSoul,
-    MinimaxSoul
+    MinimaxSoul,
+    AlphaBetaSoul
 ]
 ###################################################################
 
@@ -49,7 +48,7 @@ p2["soul"] = challenger
 players = [p1, p2]
 
 for g in gatekeepers:
-    for n, az in enumerate([faz, faz2]):
+    for n, az in enumerate([faz2, faz]):
         dot_wins = 0
         color_wins = 0
         winner = False
@@ -72,6 +71,8 @@ for g in gatekeepers:
                         all_moves.append(move)
                         break
             winner = faz.check_victory(board, players[active]['token'])
+            if not winner:
+                winner = faz.check_victory(board, players[(active + 1) % 2]['token'])
 
             if winner:
                 bs.render(board)
