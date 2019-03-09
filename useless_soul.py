@@ -20,8 +20,9 @@ class UselessSoul(ElectronicSoul):
                 for node_value in self.level_2_node_values:
                     self.append_to_file(DEFAULT_OUTPUT_FILE, node_value)
                 self.append_to_file(DEFAULT_OUTPUT_FILE, "")
-            # Clear the list of node-level 2 values for the next search 
+            # Clear the list of node-level 2 values for the next search
             self.level_2_node_values.clear()
+            self.max_depth_heuristic_count = 0
             return best_move
         return self.m_search(board, token, 0, 2, moves_played_count)[0]
 
@@ -34,27 +35,32 @@ class UselessSoul(ElectronicSoul):
                 for node_value in self.level_2_node_values:
                     self.append_to_file(DEFAULT_OUTPUT_FILE, node_value)
                 self.append_to_file(DEFAULT_OUTPUT_FILE, "")
-            # Clear the list of node-level 2 values for the next search 
+            # Clear the list of node-level 2 values for the next search
             self.level_2_node_values.clear()
+            self.max_depth_heuristic_count = 0
             return best_move
         return self.m_cycle(board, token, 0, 2, last_move)[0]
 
     def m_search(self, board, token, depth, max_depth, moves_played_count):
         possible_moves = self.mf.find_moves(board)
         best_move = ''
-        best_score = -7000000
+        best_score = -7000000 if token == "colors" else 7000000
         for m in possible_moves:
             b = self.bs.copy(board)
             self.bs.apply(b, m)
             if (depth + 1 >= max_depth):
                 h = self.baz.analyze(b, token)
-                if token == "dots":
-                    h = h*-1
-                if h > best_score:
-                    best_score = h
-                    best_move = m
+                if token == "colors":
+                    if h > best_score:
+                        best_score = h
+                        best_move = m
+                else:
+                    if h < best_score:
+                        best_score = h
+                        best_move = m
                 # Counting the number of times e(n) has been applied to max depth node
-                self.max_depth_heuristic_count += 1
+                if depth == 1:
+                    self.max_depth_heuristic_count += 1
             else:
                 if (moves_played_count >= 23):
                     their_best, h = self.m_cycle(b, self.flipside(token),
@@ -63,41 +69,54 @@ class UselessSoul(ElectronicSoul):
                     their_best, h = self.m_search(b, self.flipside(token),
                                                   depth+1, max_depth,
                                                   moves_played_count+1)
-                if h*-1 > best_score:
-                    best_score = h*-1
-                    best_move = m
-
+                if token == "colors":
+                    if h > best_score:
+                        best_score = h
+                        best_move = m
+                else:
+                    if h < best_score:
+                        best_score = h
+                        best_move = m
                 # Filling up the list of e(n) values coming up from level 2
-                if max_depth == 2:
-                    self.level_2_node_values.append(str(best_score))
+                if depth == 0:
+                    self.level_2_node_values.append(str(h))
         return best_move, best_score
 
     def m_cycle(self, board, token, depth, max_depth, last_move):
         possible_moves = self.mf.find_recyclable(board, last_move)
         best_move = ''
-        best_score = -7000000
+        best_score = -7000000 if token == "colors" else 7000000
         for m in possible_moves:
             b = self.bs.copy(board)
-            if not self.bs.recycle(b, m, last_move):
-                continue
+            self.bs.recycle(b, m, last_move)
             if (depth + 1 >= max_depth):
                 h = self.baz.analyze(b, token)
-                if token == "dots":
-                    h = h*-1
-                if h > best_score:
-                    best_score = h
-                    best_move = m
-                self.max_depth_heuristic_count += 1
+                if token == "colors":
+                    if h > best_score:
+                        best_score = h
+                        best_move = m
+                else:
+                    if h < best_score:
+                        best_score = h
+                        best_move = m
+                # Counting the number of times e(n) has been applied to max depth node
+                if depth == 1:
+                    self.max_depth_heuristic_count += 1
             else:
                 their_best, h = self.m_cycle(b, self.flipside(token),
-                                             depth+1, max_depth, m)
-                if h*-1 > best_score:
-                    best_score = h*-1
-                    best_move = m
-
+                                              depth+1, max_depth,
+                                              last_move)
+                if token == "colors":
+                    if h > best_score:
+                        best_score = h
+                        best_move = m
+                else:
+                    if h < best_score:
+                        best_score = h
+                        best_move = m
                 # Filling up the list of e(n) values coming up from level 2
-                if max_depth == 2:
-                    self.level_2_node_values.append(str(best_score))
+                if depth == 0:
+                    self.level_2_node_values.append(str(h))
         return best_move, best_score
 
     def flipside(self, token):

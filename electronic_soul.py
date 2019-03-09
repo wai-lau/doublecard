@@ -7,11 +7,11 @@ class ElectronicSoul:
         self.bs = bs
         self.baz = baz
         if sanity <= 0:
-            self.move = chaos_monkey
-            self.recycle = chaos_monkey_recycle
+            self.move = self.chaos_monkey
+            self.recycle = self.chaos_monkey_recycle
         # Else children should implement move and recycle
         if sanity < 100:
-            self.move = self.chaos(self.move)
+            self.move = self.chaos(self.move, sanity=sanity)
             self.recycle = self.chaos(self.recycle, recycle=True, sanity=sanity)
 
     # for recursive searching, we need to be careful on the transition
@@ -40,11 +40,9 @@ class ElectronicSoul:
     def chaos(self, func, recycle=False, sanity=77):
         def func_wrapper(board, *args):
             if all(not c[0] for c in board) or (random() * 100) < (100-sanity):
-                print("CHAOS PLAYS")
                 if not recycle:
                     return self.chaos_monkey(board, *args)
                 return self.chaos_monkey_recycle(board, *args)
-            print("Logic plays.")
             return func(board, *args)
         return func_wrapper
 

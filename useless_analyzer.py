@@ -1,6 +1,7 @@
+from board_analyzer import BoardAnalyzer
 from copy import deepcopy
 
-class UselessAnalyzer:
+class UselessAnalyzer(BoardAnalyzer):
     def analyze(self, board, token):
         board = deepcopy(board)
         for c, column in enumerate(board):
