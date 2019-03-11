@@ -4,7 +4,7 @@ from fetch_analyzer import FetchAnalyzer
 from minimax_soul import MinimaxSoul
 from naive_soul import NaiveSoul
 from move_finder import MoveFinder
-from points_cache import PointsCache
+from line_cache import LineCache
 from alpha_beta_soul import AlphaBetaSoul
 from alpha_lite_soul import AlphaLiteSoul
 from clock_it import clock
@@ -16,10 +16,10 @@ MAX_MOVES = 60
 bs = BoardSynth()
 mf = MoveFinder(bs)
 
-ach = PointsCache("analysis.pkl")
+ach = LineCache("analysis.pkl")
 faz = FetchAnalyzer(ach)
 
-ach2 = PointsCache("old_analysis.pkl",
+ach2 = LineCache("old_analysis.pkl",
                    our_points={0:2, 1:12, 2:600000},
                    their_points={0:12, 1:1000, 2:20000})
 faz2 = FetchAnalyzer(ach2)

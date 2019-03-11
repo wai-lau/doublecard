@@ -6,7 +6,7 @@ from useless_soul import UselessSoul
 from electronic_soul import ElectronicSoul
 from naive_soul import NaiveSoul
 from move_finder import MoveFinder
-from points_cache import PointsCache
+from line_cache import LineCache
 from alpha_beta_soul import AlphaBetaSoul
 from alpha_lite_soul import AlphaLiteSoul
 from clock_it import clock
@@ -22,8 +22,8 @@ winner = False
 
 bs = BoardSynth()
 mf = MoveFinder(bs)
-ach = PointsCache("analysis.pkl")
-ach2 = PointsCache("aggressive_analysis.pkl",
+ach = LineCache("analysis.pkl")
+ach2 = LineCache("aggressive_analysis.pkl",
                    our_points={0: 6, 1: 14, 2: 600000},
                    their_points={0: 12, 1: 1000, 2: 20000})
 faz = FetchAnalyzer(ach)
