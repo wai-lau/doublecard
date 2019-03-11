@@ -2,7 +2,7 @@ from analysis_cache import AnalysisCache
 
 class PointsCache(AnalysisCache):
     def __init__(self, filename, rebuild=False,
-                 our_points={0:2, 1:12, 2:600000},
+                 our_points={0:2, 1:23, 2:600000},
                  their_points={0:12, 1:1000, 2:20000}):
         self.our_points = our_points
         self.their_points = their_points

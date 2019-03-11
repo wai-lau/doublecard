@@ -35,7 +35,7 @@ minimax = MinimaxSoul(bs, faz, mf)
 aggressive_minimax = MinimaxSoul(bs, faz2, mf)
 minimax_chaos = MinimaxSoul(bs, faz, mf, sanity=77)
 alphabeta = AlphaBetaSoul(bs, faz, mf, sanity=99)
-alphalite = AlphaLiteSoul(bs, faz2, mf, sanity=99)
+alphalite = AlphaLiteSoul(bs, faz2, mf, depth=2)
 
 board = bs.new()
 all_moves = []
@@ -44,14 +44,14 @@ color_wins = 0
 meta_moves = []
 
 p1 = {}
-p1["name"] = "alphabeta"
+p1["name"] = "organic"
 p1["token"] = "dots"
 p1["soul"] = "organic"
 
 p2 = {}
 p2["name"] = "alphalite"
 p2["token"] = "colors"
-p2["soul"] = alphabeta
+p2["soul"] = alphalite
 
 players = [p1, p2]
 
@@ -120,7 +120,7 @@ while not winner:
                 break
     clear()
     bs.render(board)
-    print(players[active]["token"],"analysis:",
+    print("\n"+players[active]["token"],"analysis:",
           game_analyzer.analyze(board, players[active]["token"]))
     print(players[(active + 1) % 2]["token"],"analysis:",
           game_analyzer.analyze(board, players[(active + 1) % 2]["token"]))

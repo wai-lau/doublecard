@@ -1,30 +1,45 @@
 from board_synth import BoardSynth
-from board_analyzer import BoardAnalyzer
+from fetch_analyzer import FetchAnalyzer
 from analysis_cache import AnalysisCache
 from move_finder import MoveFinder
-from electronic_soul import ElectronicSoul
+from alpha_lite_soul import AlphaLiteSoul
+from points_cache import PointsCache
 from clock_it import clock
-from useless_analyzer import UselessAnalyzer
 import os
-
+ach = PointsCache("analysis.pkl")
+faz = FetchAnalyzer(ach)
 bs = BoardSynth()
+mf = MoveFinder(bs)
+alhot = AlphaLiteSoul(bs, faz, mf, hotness=1)
+aldhot = AlphaLiteSoul(bs, faz, mf, hotness=1)
+alnot = AlphaLiteSoul(bs, faz, mf)
+aldnot = AlphaLiteSoul(bs, faz, mf)
+all_moves = []
 board = bs.new()
+token = "dots"
+move = None
 
-all_moves = [
-    ['0', '3', 'a', '1'],
-    ['0', '5', 'a', '2'],
-    ['0', '8', 'c', '1'],
-    ['0', '8', 'd', '1'],
-    ['0', '3', 'e', '1'],
-    ['0', '3', 'e', '2'],
-    ['0', '1', 'e', '3'],
-    ['0', '4', 'c', '3'],
-    ['0', '4', 'd', '3']
-]
-bs.apply(board, *all_moves)
 bs.render(board)
-
-ua = UselessAnalyzer()
-print(ua.analyze(board, "dots"))
-
-import ipdb; ipdb.set_trace()
+for _ in range(10):
+    if token == "dots":
+        print("AL DHOT")
+        move = clock(aldhot.get_move)(board, token, moves_played_count=(len(all_moves)))
+        print("AL DNOT")
+        move2 = clock(aldnot.get_move)(board, token, moves_played_count=(len(all_moves)))
+    else:
+        print("AL HOT")
+        move = clock(alhot.get_move)(board, token, moves_played_count=(len(all_moves)))
+        print("AL NOT")
+        move2 = clock(alnot.get_move)(board, token, moves_played_count=(len(all_moves)))
+    if move != move2:
+        print("Not the same move:",move, move2)
+    else:
+        print("Final move:",move)
+    bs.apply(board, move)
+    bs.render(board)
+    all_moves.append(move)
+    if faz.check_victory(board, "dots"):
+        break
+    if faz.check_victory(board, "colors"):
+        break
+    token = "colors" if token == "dots" else "dots"
