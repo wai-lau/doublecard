@@ -34,8 +34,7 @@ naive_chaos = NaiveSoul(bs, faz, mf, sanity=77)
 minimax = MinimaxSoul(bs, faz, mf)
 aggressive_minimax = MinimaxSoul(bs, faz2, mf)
 minimax_chaos = MinimaxSoul(bs, faz, mf, sanity=77)
-alphabeta = AlphaBetaSoul(bs, faz, mf, sanity=99)
-alphalite = AlphaLiteSoul(bs, faz2, mf, depth=2)
+alphalite = AlphaLiteSoul(bs, faz2, mf, depth=2, hotness=1)
 
 board = bs.new()
 all_moves = []
