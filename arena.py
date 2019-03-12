@@ -5,8 +5,9 @@ from minimax_soul import MinimaxSoul
 from naive_soul import NaiveSoul
 from move_finder import MoveFinder
 from line_cache import LineCache
-from alpha_beta_soul import AlphaBetaSoul
 from alpha_lite_soul import AlphaLiteSoul
+from block_cache import BlockCache
+from block_analyzer import BlockAnalyzer
 from clock_it import clock
 import os
 
@@ -24,15 +25,19 @@ ach2 = LineCache("old_analysis.pkl",
                    their_points={0:12, 1:1000, 2:20000})
 faz2 = FetchAnalyzer(ach2)
 
+bach = BlockCache("block_analysis.pkl")
+baz = BlockAnalyzer(bach)
+
 ###################################################################
-challenger = AlphaLiteSoul(bs, faz, mf, depth=2, hotness=1)
+challenger = AlphaLiteSoul(bs, baz, mf, hotness=1)
 ###################################################################
 
 ###################################################################
 gatepkeepers = [
    NaiveSoul(bs, faz2, mf),
    MinimaxSoul(bs, faz, mf),
-   MinimaxSoul(bs, faz2, mf)
+   MinimaxSoul(bs, faz2, mf),
+   AlphaLiteSoul(bs, faz, mf)
 ]
 ###################################################################
 
@@ -106,10 +111,10 @@ for n, g in enumerate(gatepkeepers):
                     print("(",dot_wins,":",color_wins,")",
                           p2["name"], "lost to",
                           p1["name"], "with seed", m, "\n\n")
-                if dot_wins > (best_of*3)/4:
+                if dot_wins > best_of/2:
                     print("You have passed this trial.\n\n")
                     passed = True
-                if color_wins >= (best_of*1)/4:
+                if color_wins >= best_of/2:
                     print("Win rate:","(",dot_wins,":",color_wins,")",
                           "versus", p1["name"],
                           "\n\nYou shall not pass.")

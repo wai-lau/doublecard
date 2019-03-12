@@ -7,8 +7,9 @@ from electronic_soul import ElectronicSoul
 from naive_soul import NaiveSoul
 from move_finder import MoveFinder
 from line_cache import LineCache
-from alpha_beta_soul import AlphaBetaSoul
 from alpha_lite_soul import AlphaLiteSoul
+from block_cache import BlockCache
+from block_analyzer import BlockAnalyzer
 from clock_it import clock
 import os
 
@@ -26,15 +27,19 @@ ach = LineCache("analysis.pkl")
 ach2 = LineCache("aggressive_analysis.pkl",
                    our_points={0: 6, 1: 14, 2: 600000},
                    their_points={0: 12, 1: 1000, 2: 20000})
+bach = BlockCache("block_analysis.pkl")
 faz = FetchAnalyzer(ach)
 faz2 = FetchAnalyzer(ach2)
-game_analyzer = faz
-naive_sl = NaiveSoul(bs, faz, mf)
+baz = BlockAnalyzer(bach)
+game_analyzer = baz
 naive_chaos = NaiveSoul(bs, faz, mf, sanity=77)
+naive_sl = NaiveSoul(bs, faz, mf)
 minimax = MinimaxSoul(bs, faz, mf)
 aggressive_minimax = MinimaxSoul(bs, faz2, mf)
 minimax_chaos = MinimaxSoul(bs, faz, mf, sanity=77)
 alphalite = AlphaLiteSoul(bs, faz2, mf, depth=2, hotness=1)
+
+block_naive = NaiveSoul(bs, baz, mf)
 
 board = bs.new()
 all_moves = []
@@ -43,14 +48,14 @@ color_wins = 0
 meta_moves = []
 
 p1 = {}
-p1["name"] = "organic"
+p1["name"] = "naive_chaos"
 p1["token"] = "dots"
-p1["soul"] = "organic"
+p1["soul"] = naive_chaos
 
 p2 = {}
-p2["name"] = "alphalite"
+p2["name"] = "BLOCKU"
 p2["token"] = "colors"
-p2["soul"] = alphalite
+p2["soul"] = block_naive
 
 players = [p1, p2]
 
