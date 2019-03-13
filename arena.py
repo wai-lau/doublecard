@@ -29,14 +29,14 @@ bach = BlockCache("block_analysis.pkl")
 baz = BlockAnalyzer(bach)
 
 ###################################################################
-challenger = AlphaLiteSoul(bs, baz, mf, hotness=1)
+challenger = MinimaxSoul(bs, baz, mf)
 ###################################################################
 
 ###################################################################
 gatepkeepers = [
-   NaiveSoul(bs, faz2, mf),
-   MinimaxSoul(bs, faz, mf),
-   MinimaxSoul(bs, faz2, mf),
+   # NaiveSoul(bs, faz2, mf),
+   # MinimaxSoul(bs, faz, mf),
+   # MinimaxSoul(bs, faz2, mf),
    AlphaLiteSoul(bs, faz, mf)
 ]
 ###################################################################

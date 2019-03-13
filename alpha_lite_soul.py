@@ -51,14 +51,11 @@ class AlphaLiteSoul(ElectronicSoul):
 
     # notation here describes who the heuristic is best for
     # and that position analyzed which perspective
-    def m_search(self, board, token,
-                 depth, max_depth,
-                 moves_played_count,
-                 best):
+    def m_search(self, board, token, depth, max_depth,
+                 moves_played_count, best):
         # these initial values are meant to be overwritten so don't worry to much about them
         # but you need to set them big enough and the right sign
-        our_worst_our_perspective = 7000000
-        our_best_our_perspective = -7000000
+        best_score = -7000000
         hot_move = None
 
         possible_moves = self.possible_moves(board, depth, moves_played_count)
@@ -66,51 +63,44 @@ class AlphaLiteSoul(ElectronicSoul):
             b = self.bs.copy(board)
             self.bs.apply(b, m)
             h = self.baz.analyze(b, token)
-            if (0 == depth):
-                # if you can win, play that move
-                if h > 400000:
+
+            if h > 400000:
+                hot_move = m
+                if depth == 0:
                     return m
-                # assume your adversary will make the best move
-                th = -1*self.m_search(b, self.flipside(token), depth+1, max_depth,
-                                      moves_played_count,
-                                      best=-1*our_best_our_perspective)
-                # make the move that reduces his damage the most
-                if th > our_best_our_perspective:
-                    our_best_our_perspective = th
+                return 5000000
+
+            if depth >= max_depth:
+                if h > best_score:
                     hot_move = m
+                    best_score = h
+
             else:
-                if h > 400000:
-                    return 5000000
-                elif (depth < max_depth):
-                    th = -1*self.m_search(b, self.flipside(token), depth+1, max_depth,
-                                          moves_played_count,
-                                          best=-1*our_best_our_perspective)
-                    if th > our_best_our_perspective:
-                        our_best_our_perspective = th
-                        hot_move = m
-                else:
-                    if h > our_best_our_perspective:
-                        our_best_our_perspective = h
-                        hot_move = m
+                h = -1*self.m_search(b, self.flipside(token), depth+1, max_depth,
+                                     moves_played_count,
+                                     best=-1*best_score)
+                if h > best_score:
+                    hot_move = m
+                    best_score = h
+        
             # this is the pruning, if your adversary knows how to get to a weaker set of moves
             # then they will force you to go over there anyway, no need to analyze this further
-            if our_best_our_perspective >= best:
+            if best_score >= best:
+                hot_move = None
                 break
 
-        if self.hotness != 0:
-            self.add_hot_move(depth, our_best_our_perspective, hot_move)
+        if self.hotness != 0 and hot_move:
+            self.add_hot_move(depth, best_score, hot_move)
 
         if depth == 0:
             return hot_move
-        return our_best_our_perspective
+        return best_score
 
-    def add_hot_move(self, depth, our_best_our_perspective, hot_move):
+    def add_hot_move(self, depth, best_score, hot_move):
         if not self.new_hot_moves[depth]:
-            self.new_hot_moves[depth].append(
-                (our_best_our_perspective, hot_move))
-        elif our_best_our_perspective > self.new_hot_moves[depth][-1][0]:
-            self.new_hot_moves[depth].append(
-                (our_best_our_perspective, hot_move))
+            self.new_hot_moves[depth].append((best_score, hot_move))
+        elif best_score > self.new_hot_moves[depth][-1][0]:
+            self.new_hot_moves[depth].append((best_score, hot_move))
 
     def flipside(self, token):
         return "dots" if token == "colors" else "colors"
