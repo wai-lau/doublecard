@@ -53,8 +53,6 @@ class AlphaLiteSoul(ElectronicSoul):
     # and that position analyzed which perspective
     def m_search(self, board, token, depth, max_depth,
                  moves_played_count, best):
-        # these initial values are meant to be overwritten so don't worry to much about them
-        # but you need to set them big enough and the right sign
         best_score = -7000000
         hot_move = None
 
@@ -68,33 +66,30 @@ class AlphaLiteSoul(ElectronicSoul):
                 hot_move = m
                 if depth == 0:
                     return m
-                return 5000000
+                return h
 
-            if depth >= max_depth:
-                if h > best_score:
-                    hot_move = m
-                    best_score = h
-
-            else:
+            if depth < max_depth:
                 h = -1*self.m_search(b, self.flipside(token), depth+1, max_depth,
                                      moves_played_count,
                                      best=-1*best_score)
-                if h > best_score:
-                    hot_move = m
-                    best_score = h
-        
-            # this is the pruning, if your adversary knows how to get to a weaker set of moves
-            # then they will force you to go over there anyway, no need to analyze this further
-            if best_score >= best:
-                hot_move = None
-                break
 
-        if self.hotness != 0 and hot_move:
+            if h > best_score:
+                best_score = h
+                # this is the pruning, if your adversary knows how to get to a weaker set of moves
+                # then they will force you to go over there anyway, no need to analyze this further
+                if best_score >= best:
+                    break
+                hot_move = m
+
+        if hot_move:
             self.add_hot_move(depth, best_score, hot_move)
 
-        if depth == 0:
-            return hot_move
-        return best_score
+        if depth != 0:
+            return best_score
+
+        if best_score <= -400000:
+            return self.m_search(board, token, 0, max_depth-1, moves_played_count, 7000000)
+        return hot_move
 
     def add_hot_move(self, depth, best_score, hot_move):
         if not self.new_hot_moves[depth]:

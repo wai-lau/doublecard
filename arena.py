@@ -29,15 +29,14 @@ bach = BlockCache("block_analysis.pkl")
 baz = BlockAnalyzer(bach)
 
 ###################################################################
-challenger = MinimaxSoul(bs, baz, mf)
+challenger = AlphaLiteSoul(bs, baz, mf, depth=1, hotness=1)
 ###################################################################
 
 ###################################################################
 gatepkeepers = [
    # NaiveSoul(bs, faz2, mf),
    # MinimaxSoul(bs, faz, mf),
-   # MinimaxSoul(bs, faz2, mf),
-   AlphaLiteSoul(bs, faz, mf)
+   AlphaLiteSoul(bs, baz, mf, depth=2, hotness=1),
 ]
 ###################################################################
 
@@ -48,6 +47,7 @@ p1 = {}
 p2 = {}
 
 p1["token"] = "colors"
+
 p2["name"] = "Challenger"
 p2["token"] = "dots"
 p2["soul"] = challenger

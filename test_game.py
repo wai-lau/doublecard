@@ -37,7 +37,7 @@ naive_sl = NaiveSoul(bs, faz, mf)
 minimax = MinimaxSoul(bs, faz, mf)
 aggressive_minimax = MinimaxSoul(bs, faz2, mf)
 minimax_chaos = MinimaxSoul(bs, faz, mf, sanity=77)
-alphalite = AlphaLiteSoul(bs, faz2, mf, depth=2, hotness=1)
+alphalite = AlphaLiteSoul(bs, baz, mf, depth=2, hotness=1)
 
 block_naive = NaiveSoul(bs, baz, mf)
 
@@ -48,14 +48,14 @@ color_wins = 0
 meta_moves = []
 
 p1 = {}
-p1["name"] = "naive_chaos"
+p1["name"] = "organic"
 p1["token"] = "dots"
-p1["soul"] = naive_chaos
+p1["soul"] = "organic"
 
 p2 = {}
 p2["name"] = "BLOCKU"
 p2["token"] = "colors"
-p2["soul"] = block_naive
+p2["soul"] = alphalite
 
 players = [p1, p2]
 
@@ -85,7 +85,9 @@ players = [p1, p2]
 #     ['0', '1', 'g', '10'],
 #     ['0', '3', 'g', '11'],
 # ]
-# bs.apply(board, *all_moves)
+
+all_moves = [["2", "c", "1"]]
+bs.apply(board, *all_moves)
 
 def get_move(player, moves_played_count=None, last_move=None):
     move = ""
@@ -100,7 +102,6 @@ def get_move(player, moves_played_count=None, last_move=None):
               .format(len(all_moves)+1, player["token"], player["name"], move))
         input("Press Enter.")
     return move
-
 
 def clear():
     if os.name == 'nt':
@@ -128,6 +129,7 @@ while not winner:
           game_analyzer.analyze(board, players[active]["token"]))
     print(players[(active + 1) % 2]["token"],"analysis:",
           game_analyzer.analyze(board, players[(active + 1) % 2]["token"]))
+    print()
     winner = faz.check_victory(board, players[active]['token'])
     if not winner:
         winner = faz.check_victory(board, players[(active + 1) % 2]['token'])
