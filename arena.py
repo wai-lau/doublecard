@@ -28,15 +28,21 @@ faz2 = FetchAnalyzer(ach2)
 bach = BlockCache("block_analysis.pkl")
 baz = BlockAnalyzer(bach)
 
+bach2 = BlockCache("mimic_line_cache.pkl",
+                   our_points={"xxff":2, "xxrf":2, "xxxf":23,
+                               "xxrr":2,"xxxr":23,"xxxx":600000},
+                   their_points={"xxff":12, "xxrf":12, "xxxf":1000,
+                                 "xxrr":12,"xxxr":1000,"xxxx":20000})
+baz2 = BlockAnalyzer(bach2)
+
 ###################################################################
 challenger = AlphaLiteSoul(bs, baz, mf, depth=1, hotness=1)
 ###################################################################
 
 ###################################################################
 gatepkeepers = [
-   # NaiveSoul(bs, faz2, mf),
-   # MinimaxSoul(bs, faz, mf),
-   AlphaLiteSoul(bs, baz, mf, depth=2, hotness=1),
+   # AlphaLiteSoul(bs, baz, mf, depth=1, hotness=1),
+   AlphaLiteSoul(bs, baz, mf, depth=3, hotness=1),
 ]
 ###################################################################
 
@@ -54,9 +60,12 @@ p2["soul"] = challenger
 
 players = [p1, p2]
 
-possible_moves = mf.find_moves(bs.new())
+p_moves = mf.find_moves(bs.new())
 # remove card reflections and board reflections
-possible_moves = possible_moves[:int(len(possible_moves)/2 + 1):2]
+possible_moves = p_moves[int(len(p_moves)/2 + 3)::2]
+possible_moves += p_moves[:int(len(p_moves)/2 + 4):2]
+# try a specific starting position
+# possible_moves = [[6,"A",1]]
 best_of = len(possible_moves)
 
 for n, g in enumerate(gatepkeepers):

@@ -39,7 +39,7 @@ aggressive_minimax = MinimaxSoul(bs, faz2, mf)
 minimax_chaos = MinimaxSoul(bs, faz, mf, sanity=77)
 alphalite = AlphaLiteSoul(bs, baz, mf, depth=2, hotness=1)
 
-block_naive = NaiveSoul(bs, baz, mf)
+block_naive = AlphaLiteSoul(bs, baz, mf, depth=3)
 
 board = bs.new()
 all_moves = []
@@ -48,14 +48,14 @@ color_wins = 0
 meta_moves = []
 
 p1 = {}
-p1["name"] = "organic"
+p1["name"] = "roger"
 p1["token"] = "dots"
 p1["soul"] = "organic"
 
 p2 = {}
 p2["name"] = "BLOCKU"
 p2["token"] = "colors"
-p2["soul"] = alphalite
+p2["soul"] = NaiveSoul(bs, baz, mf)
 
 players = [p1, p2]
 
@@ -86,8 +86,8 @@ players = [p1, p2]
 #     ['0', '3', 'g', '11'],
 # ]
 
-all_moves = [["2", "c", "1"]]
-bs.apply(board, *all_moves)
+# all_moves = [["2", "c", "1"]]
+# bs.apply(board, *all_moves)
 
 def get_move(player, moves_played_count=None, last_move=None):
     move = ""
