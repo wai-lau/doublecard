@@ -10,6 +10,8 @@ from line_cache import LineCache
 from alpha_lite_soul import AlphaLiteSoul
 from block_cache import BlockCache
 from block_analyzer import BlockAnalyzer
+from thick_analyzer import ThickAnalyzer
+from thick_cache import ThickCache
 from clock_it import clock
 import os
 
@@ -18,7 +20,7 @@ CARDS = 24
 MAX_MOVES = 60
 
 # first player (1 or 0)
-active = 0
+active = 1
 winner = False
 
 bs = BoardSynth()
@@ -31,6 +33,8 @@ bach = BlockCache("block_analysis.pkl")
 faz = FetchAnalyzer(ach)
 faz2 = FetchAnalyzer(ach2)
 baz = BlockAnalyzer(bach)
+tach = ThickCache("tach.pkl")
+taz = ThickAnalyzer(tach)
 game_analyzer = baz
 naive_chaos = NaiveSoul(bs, faz, mf, sanity=77)
 naive_sl = NaiveSoul(bs, faz, mf)
@@ -55,7 +59,7 @@ p1["soul"] = "organic"
 p2 = {}
 p2["name"] = "BLOCKU"
 p2["token"] = "colors"
-p2["soul"] = NaiveSoul(bs, baz, mf)
+p2["soul"] = "organic"
 
 players = [p1, p2]
 
@@ -86,8 +90,8 @@ players = [p1, p2]
 #     ['0', '3', 'g', '11'],
 # ]
 
-# all_moves = [["2", "c", "1"]]
-# bs.apply(board, *all_moves)
+all_moves = [["3", "a", "1"],["2","c","1"]]
+bs.apply(board, *all_moves)
 
 def get_move(player, moves_played_count=None, last_move=None):
     move = ""
@@ -129,6 +133,10 @@ while not winner:
           game_analyzer.analyze(board, players[active]["token"]))
     print(players[(active + 1) % 2]["token"],"analysis:",
           game_analyzer.analyze(board, players[(active + 1) % 2]["token"]))
+    print("\n"+players[active]["token"],"analysis:",
+          taz.analyze(board, players[active]["token"]))
+    print(players[(active + 1) % 2]["token"],"analysis:",
+          taz.analyze(board, players[(active + 1) % 2]["token"]))
     print()
     winner = faz.check_victory(board, players[active]['token'])
     if not winner:

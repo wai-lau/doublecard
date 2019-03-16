@@ -8,6 +8,8 @@ from line_cache import LineCache
 from alpha_lite_soul import AlphaLiteSoul
 from block_cache import BlockCache
 from block_analyzer import BlockAnalyzer
+from thick_analyzer import ThickAnalyzer
+from thick_cache import ThickCache
 from clock_it import clock
 import os
 
@@ -20,29 +22,20 @@ mf = MoveFinder(bs)
 ach = LineCache("analysis.pkl")
 faz = FetchAnalyzer(ach)
 
-ach2 = LineCache("old_analysis.pkl",
-                   our_points={0:2, 1:12, 2:600000},
-                   their_points={0:12, 1:1000, 2:20000})
-faz2 = FetchAnalyzer(ach2)
-
 bach = BlockCache("block_analysis.pkl")
 baz = BlockAnalyzer(bach)
 
-bach2 = BlockCache("mimic_line_cache.pkl",
-                   our_points={"xxff":2, "xxrf":2, "xxxf":23,
-                               "xxrr":2,"xxxr":23,"xxxx":600000},
-                   their_points={"xxff":12, "xxrf":12, "xxxf":1000,
-                                 "xxrr":12,"xxxr":1000,"xxxx":20000})
-baz2 = BlockAnalyzer(bach2)
+tach = ThickCache("tach.pkl")
+taz = ThickAnalyzer(tach)
 
 ###################################################################
-challenger = AlphaLiteSoul(bs, baz, mf, depth=1, hotness=1)
+challenger = AlphaLiteSoul(bs, baz, mf, depth=2, hotness=1)
 ###################################################################
 
 ###################################################################
 gatepkeepers = [
    # AlphaLiteSoul(bs, baz, mf, depth=1, hotness=1),
-   AlphaLiteSoul(bs, baz, mf, depth=3, hotness=1),
+   AlphaLiteSoul(bs, taz, mf, depth=3, hotness=1),
 ]
 ###################################################################
 
@@ -65,9 +58,10 @@ p_moves = mf.find_moves(bs.new())
 possible_moves = p_moves[int(len(p_moves)/2 + 3)::2]
 possible_moves += p_moves[:int(len(p_moves)/2 + 4):2]
 # try a specific starting position
-# possible_moves = [[6,"A",1]]
+# possible_moves =[[3, 'B', 1], [3, 'F', 1], [7, 'F', 1], [2, 'G', 1], [6, 'G', 1]]
 best_of = len(possible_moves)
 
+cool_gatekeeper_moves = []
 for n, g in enumerate(gatepkeepers):
     dot_wins = 0
     color_wins = 0
@@ -117,13 +111,15 @@ for n, g in enumerate(gatepkeepers):
                           p1["name"], "with seed", m, "\n\n")
                 if winner == "colors":
                     color_wins = color_wins + 1
+                    cool_gatekeeper_moves.append(m)
+                    print("Cool gatekeeper moves",cool_gatekeeper_moves)
                     print("(",dot_wins,":",color_wins,")",
                           p2["name"], "lost to",
                           p1["name"], "with seed", m, "\n\n")
-                if dot_wins > best_of/2:
+                if dot_wins >= best_of:
                     print("You have passed this trial.\n\n")
                     passed = True
-                if color_wins >= best_of/2:
+                if color_wins >= best_of:
                     print("Win rate:","(",dot_wins,":",color_wins,")",
                           "versus", p1["name"],
                           "\n\nYou shall not pass.")
@@ -137,4 +133,3 @@ for n, g in enumerate(gatepkeepers):
             break
 
 print("You have passed all the trials. You may now enter the realm of the real.")
-

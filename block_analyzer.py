@@ -33,7 +33,7 @@ class BlockAnalyzer(BoardAnalyzer):
                         ))
                                 
         dags = self.diagonals(board, bboard) + \
-               self.diagonals(self.flip_board(board), bboard)
+               self.diagonals(self.flip_board(board), self.flip_board(bboard))
 
         possession = 0 if token == "dots" else 1
         return sum([self.fetch_line(l, possession) for l in cols + rows + dags])

@@ -5,9 +5,11 @@ class AnalysisCache:
         self.cache = {}
         with shelve.open(filename) as shelf:
             if rebuild or not shelf:
+                print("Creating", type(self).__name__ + "...")
                 self.generate_cache()
                 shelf['cache'] = self.cache
             else:
+                print("Loading", type(self).__name__)
                 self.cache = shelf['cache']
 
     def generate_cache(self):
