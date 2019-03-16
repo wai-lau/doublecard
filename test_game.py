@@ -7,60 +7,19 @@ from electronic_soul import ElectronicSoul
 from naive_soul import NaiveSoul
 from move_finder import MoveFinder
 from line_cache import LineCache
+from alpha_lite_soul import AlphaLiteSoul
+from block_cache import BlockCache
+from block_analyzer import BlockAnalyzer
 from clock_it import clock
-import click
 import os
 
 # number of identical cards and maximum moves allowed in the game
 CARDS = 24
 MAX_MOVES = 60
 
-p1 = {}
-p2 = {}
-
-players = []
-
 # first player (1 or 0)
 active = 0
 winner = False
-
-# to enable the generation of a trace if required by the game player
-def require_trace():
-    if click.confirm('Would you like to generate a trace of the minimax?', default=True):
-        return True
-    return False
-
-def ai_player_number():
-    player_num = ''
-    player_nums = ['1','2']
-    while player_num not in player_nums:
-        player_num = input(
-            "Should AI be player 1 or 2? [1/2] ")
-    return player_num
-
-# for manual play, prompt the user to choose between dots or colors
-# assign other choice to the electronic soul
-def get_choice(choices):
-    choice = ""
-    while choice not in choices:
-        choice = input(
-            "Welcome to Double Card!\n"
-            "Which of [%s] would you like to play as? " % ", ".join(choices))
-    return choice
-
-ai_player_order = ai_player_number()
-# select choices for players
-choice = "colors"
-choice = get_choice(["dots", "colors"])
-opp_choice = ""
-
-if choice == "dots":
-    opp_choice = "colors"
-else:
-    opp_choice = "dots"
-
-# prompt to inquire if trace is needed
-generate_trace = require_trace()
 
 bs = BoardSynth()
 mf = MoveFinder(bs)
@@ -68,17 +27,19 @@ ach = LineCache("analysis.pkl")
 ach2 = LineCache("aggressive_analysis.pkl",
                    our_points={0: 6, 1: 14, 2: 600000},
                    their_points={0: 12, 1: 1000, 2: 20000})
+bach = BlockCache("block_analysis.pkl")
 faz = FetchAnalyzer(ach)
 faz2 = FetchAnalyzer(ach2)
-ua = UselessAnalyzer()
-game_analyzer = ua
-naive_sl = NaiveSoul(bs, faz, mf)
+baz = BlockAnalyzer(bach)
+game_analyzer = baz
 naive_chaos = NaiveSoul(bs, faz, mf, sanity=77)
-monkey = ElectronicSoul(bs, faz, mf, sanity=100)
+naive_sl = NaiveSoul(bs, faz, mf)
 minimax = MinimaxSoul(bs, faz, mf)
 aggressive_minimax = MinimaxSoul(bs, faz2, mf)
 minimax_chaos = MinimaxSoul(bs, faz, mf, sanity=77)
-useless = UselessSoul(bs, ua, mf, True) if generate_trace else UselessSoul(bs, ua, mf, False)
+alphalite = AlphaLiteSoul(bs, baz, mf, depth=2, hotness=1)
+
+block_naive = AlphaLiteSoul(bs, baz, mf, depth=3)
 
 board = bs.new()
 all_moves = []
@@ -86,24 +47,19 @@ dot_wins = 0
 color_wins = 0
 meta_moves = []
 
-ai = {}
-ai["name"] = "useless"
-ai["token"] = opp_choice
-ai["soul"] = useless
+p1 = {}
+p1["name"] = "roger"
+p1["token"] = "dots"
+p1["soul"] = "organic"
 
-other = {}
-other["name"] = "human"
-other["token"] = choice
-other["soul"] = "organic"
+p2 = {}
+p2["name"] = "BLOCKU"
+p2["token"] = "colors"
+p2["soul"] = NaiveSoul(bs, baz, mf)
 
-if ai_player_order == '1':
-    players = [ai, other]
-else:
-    players = [other, ai]
+players = [p1, p2]
 
 # the following will fill up the board, helping with the recycle implementation
-# all_moves = [['0', '1', 'a', '1'], ['0', '6', 'b', '2'], ['0', '6', 'c', '1'], ['0', '3', 'd', '1'], ['0', '8', 'c', '3'], ['0', '2', 'A', '2'], ['0', '1', 'F', '1'], ['0', '8', 'H', '1'], ['0', '3', 'E', '2'], ['0', '5', 'E', '3'], ['0', '8', 'D', '2'], ['0', '1', 'D', '4'], ['0', '8', 'H', '3'], ['0', '8', 'H', '5'], ['0', '8', 'H', '7'], ['0', '8', 'H', '9'], ['0', '8', 'H', '11'], ['0', '8', 'D', '5'], ['0', '8', 'D', '7'], ['0', '8', 'D', '9'], ['0', '8', 'D', '11'], ['0', '4', 'A', '4'], ['0', '4', 'A', '6']]
-# all_moves = [['0', '5', 'a', '1'], ['0', '5', 'a', '2'], ['0', '5', 'a', '3'], ['0', '7', 'a', '4'], ['0', '8', 'a', '5'], ['0', '8', 'b', '5'], ['0', '5', 'c', '1'], ['0', '5', 'c', '2'], ['0', '5', 'c', '3'], ['0', '7', 'c', '4'], ['0', '8', 'c', '5'], ['0', '8', 'd', '5'], ['0', '5', 'e', '1'], ['0', '5', 'e', '2'], ['0', '5', 'e', '3'], ['0', '7', 'e', '4'], ['0', '8', 'e', '5'], ['0', '8', 'f', '5'], ['0', '5', 'g', '1'], ['0', '5', 'g', '2'], ['0', '5', 'g', '3'], ['0', '7', 'g', '4'], ['0', '8', 'g', '5'], ['0', '8', 'h', '5']]
 # all_moves = [
 #     ['0', '1', 'a', '1'],
 #     ['0', '1', 'a', '2'],
@@ -129,15 +85,15 @@ else:
 #     ['0', '1', 'g', '10'],
 #     ['0', '3', 'g', '11'],
 # ]
-# bs.apply(board, *all_moves)
 
+# all_moves = [["2", "c", "1"]]
+# bs.apply(board, *all_moves)
 
 def get_move(player, moves_played_count=None, last_move=None):
     move = ""
     if player["soul"] == "organic":
         move = input("{}: {}, {}'s move: "
                      .format(len(all_moves)+1, player["token"], player["name"]))
-        # to allow users to enter input containing spaces
         move = move.split(' ')
     else:
         move = clock(player["soul"].get_move)(
@@ -146,7 +102,6 @@ def get_move(player, moves_played_count=None, last_move=None):
               .format(len(all_moves)+1, player["token"], player["name"], move))
         input("Press Enter.")
     return move
-
 
 def clear():
     if os.name == 'nt':
@@ -170,10 +125,11 @@ while not winner:
                 break
     clear()
     bs.render(board)
-    print(players[active]["token"],"analysis:",
+    print("\n"+players[active]["token"],"analysis:",
           game_analyzer.analyze(board, players[active]["token"]))
     print(players[(active + 1) % 2]["token"],"analysis:",
           game_analyzer.analyze(board, players[(active + 1) % 2]["token"]))
+    print()
     winner = faz.check_victory(board, players[active]['token'])
     if not winner:
         winner = faz.check_victory(board, players[(active + 1) % 2]['token'])
@@ -183,16 +139,10 @@ while not winner:
             dot_wins = dot_wins + 1
         if winner == "colors":
             color_wins = color_wins + 1
-            meta_moves.append(all_moves)
-        if color_wins < 0:
-            winner = ""
-            active = 0
-            all_moves = []
-            board = bs.new()
-            clear()
-            bs.render(board)
-            continue
-        print("Game over,", winner, "win!")
+        if players[0]["token"] == winner:
+            print("\n==>", players[0]["name"], "wins!\n")
+        else:
+            print("\n==>", players[1]["name"], "wins!\n")
         break
 
     if len(all_moves) >= MAX_MOVES:
@@ -201,7 +151,4 @@ while not winner:
 
     active = (active + 1) % 2
 
-print("Dot wins: ", dot_wins)
-print("Color wins: ", color_wins)
-print("Color win games: ")
-print(meta_moves)
+print(all_moves)

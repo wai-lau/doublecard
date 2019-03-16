@@ -1,30 +1,18 @@
+from block_cache import BlockCache
+from block_analyzer import BlockAnalyzer
 from board_synth import BoardSynth
-from board_analyzer import BoardAnalyzer
-from analysis_cache import AnalysisCache
+from alpha_lite_soul import AlphaLiteSoul
 from move_finder import MoveFinder
-from electronic_soul import ElectronicSoul
-from clock_it import clock
-from useless_analyzer import UselessAnalyzer
-import os
 
 bs = BoardSynth()
+mf = MoveFinder(bs)
+bach = BlockCache("block_analysis.pkl")
+baz = BlockAnalyzer(bach)
 board = bs.new()
-
-all_moves = [
-    ['0', '3', 'a', '1'],
-    ['0', '5', 'a', '2'],
-    ['0', '8', 'c', '1'],
-    ['0', '8', 'd', '1'],
-    ['0', '3', 'e', '1'],
-    ['0', '3', 'e', '2'],
-    ['0', '1', 'e', '3'],
-    ['0', '4', 'c', '3'],
-    ['0', '4', 'd', '3']
-]
-bs.apply(board, *all_moves)
+bs.apply(board, [2, 'g', 1], [8, 'E', 1], [4, 'D', 1], [2, 'F', 1], [6, 'H', 1])
+         #, [8, 'B', 1])
+         # [2, 'F', 1], [2, 'A', 1], [6, 'D', 1])
 bs.render(board)
-
-ua = UselessAnalyzer()
-print(ua.analyze(board, "dots"))
-
+alphalite = AlphaLiteSoul(bs, baz, mf, depth=3, hotness=1)
+alphalite.get_move(board, "dots", moves_played_count=5)
 import ipdb; ipdb.set_trace()

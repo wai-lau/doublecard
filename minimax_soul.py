@@ -1,11 +1,15 @@
 from electronic_soul import ElectronicSoul
 
 class MinimaxSoul(ElectronicSoul):
+    def __init__(self, bs, baz, mf, depth=2, **kwargs):
+        super().__init__(bs, baz, mf, **kwargs)
+        self.depth = depth
+
     def move(self, board, token, moves_played_count, *args):
-        return self.m_search(board, token, 0, 2, moves_played_count)[0]
+        return self.m_search(board, token, 0, self.depth, moves_played_count)[0]
 
     def recycle(self, board, token, last_move, *args):
-        return self.m_cycle(board, token, 0, 2, last_move)[0]
+        return self.m_cycle(board, token, 0, self.depth, last_move)[0]
 
     def m_search(self, board, token, depth, max_depth, moves_played_count):
         possible_moves = self.mf.find_moves(board)
