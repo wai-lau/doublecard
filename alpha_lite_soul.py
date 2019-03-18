@@ -46,7 +46,7 @@ class AlphaLiteSoul(ElectronicSoul):
             del moves[:]
 
     def possible_moves(self, board, depth, moves_played_count=4):
-        if self.hotness == 0 or moves_played_count <= 3:
+        if self.hotness == 0:
             return self.mf.find_moves(board)
         else:
             if (0 == depth):

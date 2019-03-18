@@ -33,8 +33,7 @@ challenger = AlphaLiteSoul(bs, taz, mf, depth=3, hotness=1)
 ###################################################################
 
 ###################################################################
-gatepkeepers = [
-   # AlphaLiteSoul(bs, baz, mf, depth=1, hotness=1),
+gatekeepers = [
    # MinimaxSoul(bs, faz, mf, depth=2),
    AlphaLiteSoul(bs, taz, mf, depth=1, hotness=1),
 ]
@@ -63,7 +62,7 @@ possible_moves += p_moves[:int(len(p_moves)/2 + 4):2]
 best_of = len(possible_moves)
 
 cool_gatekeeper_moves = []
-for n, g in enumerate(gatepkeepers):
+for n, g in enumerate(gatekeepers):
     dot_wins = 0
     color_wins = 0
     p1["soul"] = g
