@@ -29,13 +29,14 @@ tach = ThickCache("tach.pkl")
 taz = ThickAnalyzer(tach)
 
 ###################################################################
-challenger = AlphaLiteSoul(bs, baz, mf, depth=2, hotness=1)
+challenger = AlphaLiteSoul(bs, taz, mf, depth=3, hotness=1)
 ###################################################################
 
 ###################################################################
 gatepkeepers = [
    # AlphaLiteSoul(bs, baz, mf, depth=1, hotness=1),
-   AlphaLiteSoul(bs, taz, mf, depth=3, hotness=1),
+   # MinimaxSoul(bs, faz, mf, depth=2),
+   AlphaLiteSoul(bs, taz, mf, depth=1, hotness=1),
 ]
 ###################################################################
 
@@ -92,7 +93,7 @@ for n, g in enumerate(gatepkeepers):
                         break
             dt2 = datetime.now()
             delay = round((dt2-dt).seconds*1000 + (dt2-dt).microseconds/1000, 3)
-            if delay >= 3500:
+            if delay >= 6000:
                 print("\t========================================================")
                 print("\t"+players[active]["name"], "took", delay, "seconds analyzing.")
                 print("\tMoves thus far:", all_moves)

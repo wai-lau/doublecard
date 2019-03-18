@@ -67,15 +67,15 @@ class AlphaLiteSoul(ElectronicSoul):
             for m in self.find_hot_moves(board, depth):
                 b = self.bs.copy(board)
                 self.bs.apply(b, m)
-                h = self.baz.analyze(b, token)
-                if h > 400000:
-                    value = h
-                    move = m
-                    break
-                else:
-                    # if depth == 0:
-                    #     print("Level 0 is trying:", m)
-                    h = self.m_search(b, token, depth+1, max_depth, moves_played_count, alpha, beta)
+                if depth < max_depth - 1:
+                    h = self.baz.analyze(b, token)
+                    if h > 400000:
+                        value = h
+                        move = m
+                        break
+                # if depth == 0:
+                #     print("Level 0 is trying:", m)
+                h = self.m_search(b, token, depth+1, max_depth, moves_played_count, alpha, beta)
                 if h > value:
                     value = h
                     move = m
@@ -93,13 +93,13 @@ class AlphaLiteSoul(ElectronicSoul):
             for m in self.find_hot_moves(board, depth):
                 b = self.bs.copy(board)
                 self.bs.apply(b, m)
-                h = self.baz.analyze(b, self.flipside(token))
-                if h > 400000:
-                    value = -1*h
-                    move = m
-                    break
-                else:
-                    h = self.m_search(b, token, depth+1, max_depth, moves_played_count, alpha, beta)
+                if depth < max_depth - 1:
+                    h = self.baz.analyze(b, self.flipside(token))
+                    if h > 400000:
+                        value = -1*h
+                        move = m
+                        break
+                h = self.m_search(b, token, depth+1, max_depth, moves_played_count, alpha, beta)
                 if h < value:
                     value = h
                     move = m

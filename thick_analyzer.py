@@ -5,7 +5,6 @@ import re
 class ThickAnalyzer(BoardAnalyzer):
     def __init__(self, ach):
         self.ach = ach
-        self.p = Pool()
 
     def check_victory(self, board, token):
         heuristic = self.analyze(board, token)
@@ -22,7 +21,7 @@ class ThickAnalyzer(BoardAnalyzer):
         st_board = self.support_board(t_board)
 
         cols = [self.convert_line(("".join(col))[-4*2:])
-                for col in board if "".join(col)]
+                for col in board if len("".join(col)) >= 2*2]
         rows = [[c + " " + st_board[r] for c \
                 in self.convert_line("".join(ft_board[r]))]
                 for r, row in enumerate(t_board) if len("".join(row)) >= 2*2]
