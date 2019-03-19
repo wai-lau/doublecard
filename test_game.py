@@ -1,15 +1,7 @@
-from useless_analyzer import UselessAnalyzer
 from board_synth import BoardSynth
 from fetch_analyzer import FetchAnalyzer
-from minimax_soul import MinimaxSoul
-from useless_soul import UselessSoul
-from electronic_soul import ElectronicSoul
-from naive_soul import NaiveSoul
 from move_finder import MoveFinder
-from line_cache import LineCache
 from alpha_lite_soul import AlphaLiteSoul
-from block_cache import BlockCache
-from block_analyzer import BlockAnalyzer
 from thick_analyzer import ThickAnalyzer
 from thick_cache import ThickCache
 from clock_it import clock
@@ -20,30 +12,15 @@ CARDS = 24
 MAX_MOVES = 60
 
 # first player (1 or 0)
-active = 1
+active = 0
 winner = False
 
 bs = BoardSynth()
 mf = MoveFinder(bs)
-ach = LineCache("analysis.pkl")
-ach2 = LineCache("aggressive_analysis.pkl",
-                   our_points={0: 6, 1: 14, 2: 600000},
-                   their_points={0: 12, 1: 1000, 2: 20000})
-bach = BlockCache("block_analysis.pkl")
-faz = FetchAnalyzer(ach)
-faz2 = FetchAnalyzer(ach2)
-baz = BlockAnalyzer(bach)
 tach = ThickCache("tach.pkl")
 taz = ThickAnalyzer(tach)
-game_analyzer = baz
-naive_chaos = NaiveSoul(bs, faz, mf, sanity=77)
-naive_sl = NaiveSoul(bs, faz, mf)
-minimax = MinimaxSoul(bs, faz, mf)
-aggressive_minimax = MinimaxSoul(bs, faz2, mf)
-minimax_chaos = MinimaxSoul(bs, faz, mf, sanity=77)
-alphalite = AlphaLiteSoul(bs, baz, mf, depth=2, hotness=1)
-
-block_naive = AlphaLiteSoul(bs, baz, mf, depth=3)
+game_analyzer = taz
+alphalite = AlphaLiteSoul(bs, taz, mf, depth=3, hotness=1)
 
 board = bs.new()
 all_moves = []
@@ -54,7 +31,7 @@ meta_moves = []
 p1 = {}
 p1["name"] = "roger"
 p1["token"] = "dots"
-p1["soul"] = "organic"
+p1["soul"] = alphalite
 
 p2 = {}
 p2["name"] = "BLOCKU"
@@ -63,7 +40,9 @@ p2["soul"] = "organic"
 
 players = [p1, p2]
 
+all_moves = []
 # the following will fill up the board, helping with the recycle implementation
+# all_moves = [["3", "a", "1"],["2","c","1"]]
 # all_moves = [
 #     ['0', '1', 'a', '1'],
 #     ['0', '1', 'a', '2'],
@@ -90,7 +69,6 @@ players = [p1, p2]
 #     ['0', '3', 'g', '11'],
 # ]
 
-all_moves = [["3", "a", "1"],["2","c","1"]]
 bs.apply(board, *all_moves)
 
 def get_move(player, moves_played_count=None, last_move=None):
@@ -123,7 +101,10 @@ while not winner:
                 all_moves.append(move)
                 break
         else:
-            move = get_move(players[active], len(all_moves))
+            if all_moves:
+                move = get_move(players[active], len(all_moves), all_moves[-1])
+            else:
+                move = get_move(players[active], len(all_moves))
             if bs.apply(board, move):
                 all_moves.append(move)
                 break
@@ -133,14 +114,10 @@ while not winner:
           game_analyzer.analyze(board, players[active]["token"]))
     print(players[(active + 1) % 2]["token"],"analysis:",
           game_analyzer.analyze(board, players[(active + 1) % 2]["token"]))
-    print("\n"+players[active]["token"],"analysis:",
-          taz.analyze(board, players[active]["token"]))
-    print(players[(active + 1) % 2]["token"],"analysis:",
-          taz.analyze(board, players[(active + 1) % 2]["token"]))
     print()
-    winner = faz.check_victory(board, players[active]['token'])
+    winner = game_analyzer.check_victory(board, players[active]['token'])
     if not winner:
-        winner = faz.check_victory(board, players[(active + 1) % 2]['token'])
+        winner = game_analyzer.check_victory(board, players[(active + 1) % 2]['token'])
 
     if winner:
         if winner == "dots":
