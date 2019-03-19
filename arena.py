@@ -35,7 +35,9 @@ challenger = AlphaLiteSoul(bs, taz, mf, depth=3, hotness=1)
 ###################################################################
 gatekeepers = [
    # MinimaxSoul(bs, faz, mf, depth=2),
-   AlphaLiteSoul(bs, taz, mf, depth=1, hotness=1),
+   AlphaLiteSoul(bs, taz, mf, depth=1, hotness=1, sensei=False),
+   AlphaLiteSoul(bs, taz, mf, depth=2, hotness=1, sensei=False),
+   AlphaLiteSoul(bs, taz, mf, depth=3, hotness=1),
 ]
 ###################################################################
 
@@ -45,36 +47,49 @@ def get_move(player, moves_played_count=None, last_move=None):
 p1 = {}
 p2 = {}
 
-p1["token"] = "colors"
+p2["token"] = "colors"
 
-p2["name"] = "Challenger"
-p2["token"] = "dots"
-p2["soul"] = challenger
+p1["name"] = "Challenger"
+p1["token"] = "dots"
+p1["soul"] = challenger
 
 players = [p1, p2]
+mode = "defence"
+start_board = bs.new()
 
-p_moves = mf.find_moves(bs.new())
+# attack means to attack an existing position
+# defend means to play first, and get attacked
+if mode == "attack":
+    # this should be the sensei move of the attacker
+    bs.apply(start_board, [1,"C",1])
+
+p_moves = mf.find_moves(start_board)
+
 # remove card reflections and board reflections
 possible_moves = p_moves[int(len(p_moves)/2 + 3)::2]
 possible_moves += p_moves[:int(len(p_moves)/2 + 4):2]
+
 # try a specific starting position
 # possible_moves =[[3, 'B', 1], [3, 'F', 1], [7, 'F', 1], [2, 'G', 1], [6, 'G', 1]]
+
 best_of = len(possible_moves)
 
-cool_gatekeeper_moves = []
 for n, g in enumerate(gatekeepers):
     dot_wins = 0
     color_wins = 0
-    p1["soul"] = g
-    p1["name"] = type(p1["soul"]).__name__ + "#" + str(n)
-    print("Challenger is now facing", p1["name"])
+    p2["soul"] = g
+    p2["name"] = type(p2["soul"]).__name__ + "#" + str(n)
+    print("Challenger is now facing", p2["name"])
     passed = False
     for m in possible_moves:
         winner = False
-        active = 1
+        active = 0
         board = bs.new()
-        all_moves = [m]
-        bs.apply(board, m)
+        if mode == "attack":
+            all_moves = []
+        else:
+          all_moves = [m]
+          bs.apply(board, m)
         while not winner:
             dt = datetime.now()
             while True:
@@ -86,10 +101,19 @@ for n, g in enumerate(gatekeepers):
                         break
                 else:
                     print(players[active]["name"]+"'s move: ", end="")
-                    move = clock(get_move)(players[active], len(all_moves))
-                    if bs.apply(board, move):
-                        all_moves.append(move)
+                    if len(all_moves) == 1 and mode == "attack":
+                        print("Forced:", m)
+                        all_moves.append(m)
+                        bs.apply(board, m)
                         break
+                    else:
+                        if all_moves:
+                            move = clock(get_move)(players[active], len(all_moves), all_moves[-1])
+                        else:
+                            move = clock(get_move)(players[active], len(all_moves))
+                        if bs.apply(board, move):
+                            all_moves.append(move)
+                            break
             dt2 = datetime.now()
             delay = round((dt2-dt).seconds*1000 + (dt2-dt).microseconds/1000, 3)
             if delay >= 6000:
@@ -107,21 +131,19 @@ for n, g in enumerate(gatekeepers):
                 if winner == "dots":
                     dot_wins = dot_wins + 1
                     print("(",dot_wins,":",color_wins,")",
-                          p2["name"], "decimated",
-                          p1["name"], "with seed", m, "\n\n")
+                          p1["name"], "decimated",
+                          p2["name"], "with seed", m, "\n\n")
                 if winner == "colors":
                     color_wins = color_wins + 1
-                    cool_gatekeeper_moves.append(m)
-                    print("Cool gatekeeper moves",cool_gatekeeper_moves)
                     print("(",dot_wins,":",color_wins,")",
-                          p2["name"], "lost to",
-                          p1["name"], "with seed", m, "\n\n")
+                          p1["name"], "lost to",
+                          p2["name"], "with seed", m, "\n\n")
                 if dot_wins >= best_of:
                     print("You have passed this trial.\n\n")
                     passed = True
                 if color_wins >= best_of:
                     print("Win rate:","(",dot_wins,":",color_wins,")",
-                          "versus", p1["name"],
+                          "versus", p2["name"],
                           "\n\nYou shall not pass.")
                     exit()
 

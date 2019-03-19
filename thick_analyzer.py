@@ -32,8 +32,6 @@ class ThickAnalyzer(BoardAnalyzer):
         lines = cols + rows + dags
         dots, colors = zip(*lines)
         
-        # import ipdb; ipdb.set_trace()
-
         if token == "dots":
             return (sum(self.fetch_line(d, 0) for d in dots) -
                     sum(self.fetch_line(c, 1) for c in colors))

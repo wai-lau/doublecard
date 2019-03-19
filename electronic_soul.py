@@ -19,7 +19,7 @@ class ElectronicSoul:
     def get_move(self, board, token, last_move=None, moves_played_count=None):
         if moves_played_count and moves_played_count >= 24:
             return self.recycle(board, token, last_move)
-        return self.move(board, token, moves_played_count)
+        return self.move(board, token, moves_played_count, last_move)
 
     def move(self, board, token, moves_played_count):
         raise NotImplementedError
