@@ -7,12 +7,17 @@ from thick_cache import ThickCache
 from clock_it import clock
 import os
 
+def clear():
+    if os.name == 'nt':
+        os.system("cls")
+    else:
+        os.system("clear")
+
 # number of identical cards and maximum moves allowed in the game
 CARDS = 24
-MAX_MOVES = 60
+MAX_MOVES = 40
 
 # first player (1 or 0)
-active = 0
 winner = False
 
 bs = BoardSynth()
@@ -23,23 +28,22 @@ game_analyzer = taz
 alphalite = AlphaLiteSoul(bs, taz, mf, depth=3, hotness=1)
 
 board = bs.new()
-all_moves = []
-dot_wins = 0
-color_wins = 0
-meta_moves = []
+
+clear()
 
 p1 = {}
-p1["name"] = "HNNNNNG"
-p1["token"] = "colors"
+p1["name"] = input("What's your name? ")
+p1["token"] = "dots" if input("Dots or colors? ").replace("s", "").lower() == "dot" else "colors"
 p1["soul"] = "organic"
 
 p2 = {}
 p2["name"] = "BLOCKU"
-p2["token"] = "dots"
-p2["soul"] = "organic"
+p2["token"] = "colors" if p1["token"] == "dots" else "dots"
+p2["soul"] = alphalite
 
-players = [p1, p2]
+players = [p1, p2] if input("Player (1) or (2)? ") == "1" else [p2, p1]
 
+active = 0
 all_moves = []
 # the following will fill up the board, helping with the recycle implementation
 # all_moves = [["3", "a", "1"],["2","c","1"]]
@@ -120,10 +124,6 @@ while not winner:
         winner = game_analyzer.check_victory(board, players[(active + 1) % 2]['token'])
 
     if winner:
-        if winner == "dots":
-            dot_wins = dot_wins + 1
-        if winner == "colors":
-            color_wins = color_wins + 1
         if players[0]["token"] == winner:
             print("\n==>", players[0]["name"], "wins!\n")
         else:
