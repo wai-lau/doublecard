@@ -29,13 +29,13 @@ color_wins = 0
 meta_moves = []
 
 p1 = {}
-p1["name"] = "roger"
-p1["token"] = "dots"
-p1["soul"] = alphalite
+p1["name"] = "HNNNNNG"
+p1["token"] = "colors"
+p1["soul"] = "organic"
 
 p2 = {}
 p2["name"] = "BLOCKU"
-p2["token"] = "colors"
+p2["token"] = "dots"
 p2["soul"] = "organic"
 
 players = [p1, p2]
