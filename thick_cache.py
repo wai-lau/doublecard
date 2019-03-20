@@ -13,7 +13,7 @@ class ThickCache(AnalysisCache):
 
     def generate_cache(self):
         # Vert 4s
-        terms = 3**4
+        terms = 3**5
         for i in range(terms):
             t = self.tern(i)
             self.cache[t] = self.check_line(t)
@@ -48,6 +48,10 @@ class ThickCache(AnalysisCache):
 
     def check_vert(self, line):
         x = r = f = 0
+        if len(line) == 5:
+            if ("1" not in line[:4] or "2" not in line[:4]):
+                return self.dual_analysis((4, 0, 0))
+            line = line[1:5]
         for h in range(3):
             if ("1" not in line[h:] or "2" not in line[h:]):
                 x = len(line[h:])
@@ -57,7 +61,6 @@ class ThickCache(AnalysisCache):
                 elif x == 3:
                     r = 1
                 break
-
         return self.dual_analysis((x, r, f))
         
 
