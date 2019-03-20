@@ -30,14 +30,15 @@ taz = ThickAnalyzer(tach)
 
 ###################################################################
 challenger = AlphaLiteSoul(bs, taz, mf, depth=3, hotness=1)
+mode = "defend"
 ###################################################################
 
 ###################################################################
 gatekeepers = [
-   # MinimaxSoul(bs, faz, mf, depth=2),
-   AlphaLiteSoul(bs, taz, mf, depth=1, hotness=1, sensei=False),
-   AlphaLiteSoul(bs, taz, mf, depth=2, hotness=1, sensei=False),
-   AlphaLiteSoul(bs, taz, mf, depth=3, hotness=1),
+    MinimaxSoul(bs, faz, mf, depth=2),
+    AlphaLiteSoul(bs, taz, mf, depth=1, hotness=1, sensei=False),
+    AlphaLiteSoul(bs, taz, mf, depth=2, hotness=1, sensei=False),
+    # AlphaLiteSoul(bs, taz, mf, depth=3, hotness=1),
 ]
 ###################################################################
 
@@ -54,23 +55,25 @@ p1["token"] = "dots"
 p1["soul"] = challenger
 
 players = [p1, p2]
-mode = "defence"
 start_board = bs.new()
 
 # attack means to attack an existing position
 # defend means to play first, and get attacked
-if mode == "attack":
+if mode != "attack":
     # this should be the sensei move of the attacker
-    bs.apply(start_board, [1,"C",1])
+    bs.apply(start_board, [7,"G",1])
 
 p_moves = mf.find_moves(start_board)
 
 # remove card reflections and board reflections
-possible_moves = p_moves[int(len(p_moves)/2 + 3)::2]
-possible_moves += p_moves[:int(len(p_moves)/2 + 4):2]
+# possible_moves = p_moves[int(len(p_moves)/2 + 3)::2]
+# possible_moves += p_moves[:int(len(p_moves)/2 + 4):2]
 
 # try a specific starting position
-# possible_moves =[[3, 'B', 1], [3, 'F', 1], [7, 'F', 1], [2, 'G', 1], [6, 'G', 1]]
+possible_moves = [[5, "B", 1],[3, "A", 1]]
+
+# try all positions
+# possible_moves = p_moves
 
 best_of = len(possible_moves)
 
@@ -86,72 +89,50 @@ for n, g in enumerate(gatekeepers):
         active = 0
         board = bs.new()
         if mode == "attack":
-            all_moves = []
-        else:
-          all_moves = [m]
-          bs.apply(board, m)
+            active = 1
+        all_moves = []
         while not winner:
             dt = datetime.now()
             while True:
                 if len(all_moves) >= CARDS:
-                    print(players[active]["name"]+"'s move: ", end="")
-                    move = clock(get_move)(players[active], len(all_moves), all_moves[-1])
+                    move = get_move(players[active], len(all_moves), all_moves[-1])
                     if bs.recycle(board, move, all_moves[-1]):
                         all_moves.append(move)
                         break
                 else:
-                    print(players[active]["name"]+"'s move: ", end="")
-                    if len(all_moves) == 1 and mode == "attack":
-                        print("Forced:", m)
+                    if (len(all_moves) == 0 and mode == "attack") or\
+                       (len(all_moves) == 1 and mode != "attack"):
                         all_moves.append(m)
                         bs.apply(board, m)
                         break
                     else:
                         if all_moves:
-                            move = clock(get_move)(players[active], len(all_moves), all_moves[-1])
+                            move = get_move(players[active], len(all_moves), all_moves[-1])
                         else:
-                            move = clock(get_move)(players[active], len(all_moves))
+                            move = get_move(players[active], len(all_moves))
                         if bs.apply(board, move):
                             all_moves.append(move)
                             break
-            dt2 = datetime.now()
-            delay = round((dt2-dt).seconds*1000 + (dt2-dt).microseconds/1000, 3)
-            if delay >= 6000:
-                print("\t========================================================")
-                print("\t"+players[active]["name"], "took", delay, "seconds analyzing.")
-                print("\tMoves thus far:", all_moves)
-                print("\t========================================================")
             winner = faz.check_victory(board, players[active]['token'])
             if not winner:
                 winner = faz.check_victory(board, players[(active + 1) % 2]['token'])
 
             if winner:
-                bs.render(board)
-                print(all_moves,"\n")
+                print(all_moves)
                 if winner == "dots":
                     dot_wins = dot_wins + 1
                     print("(",dot_wins,":",color_wins,")",
                           p1["name"], "decimated",
-                          p2["name"], "with seed", m, "\n\n")
+                          p2["name"], "with seed", m)
                 if winner == "colors":
                     color_wins = color_wins + 1
                     print("(",dot_wins,":",color_wins,")",
                           p1["name"], "lost to",
-                          p2["name"], "with seed", m, "\n\n")
-                if dot_wins >= best_of:
-                    print("You have passed this trial.\n\n")
-                    passed = True
-                if color_wins >= best_of:
-                    print("Win rate:","(",dot_wins,":",color_wins,")",
-                          "versus", p2["name"],
-                          "\n\nYou shall not pass.")
-                    exit()
-
+                          p2["name"], "with seed", m)
+                print()
             if len(all_moves) >= MAX_MOVES:
                 print("The maximum number of moves has been reached. It is a draw.")
 
             active = (active + 1) % 2
-        if passed:
-            break
 
 print("You have passed all the trials. You may now enter the realm of the real.")
